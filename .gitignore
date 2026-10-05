@@ -1,0 +1,36 @@
+## Build
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## IDE
+.idea/
+.vs/
+*.rsuser
+*.DotSettings.user
+
+## NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+## OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## Local / secrets
+appsettings.*.local.json
+*.local.json
+.env
+.env.*
+
+## Reference clones (not part of the product)
+_ref/
+HCP_64

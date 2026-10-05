@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/StudioManager.App/StudioManager.App.csproj" />
+    <Project Path="src/StudioManager.Core/StudioManager.Core.csproj" />
+  </Folder>
+</Solution>
