@@ -17,31 +17,36 @@
         Closed="Window_Closed">
 
     <DockPanel>
-        <StatusBar DockPanel.Dock="Bottom">
+        <StatusBar DockPanel.Dock="Bottom" Height="36" Padding="12,0">
             <StatusBarItem>
-                <TextBlock x:Name="StatusText"/>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="7" Height="7" Fill="{StaticResource ShellSuccess}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="StatusText" VerticalAlignment="Center"/>
+                </StackPanel>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding [Language]}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding [Language]}" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="{StaticResource ShellMuted}"/>
                     <ComboBox x:Name="LanguageCombo"
-                              Width="120"
+                              Width="128"
                               ItemsSource="{Binding AvailableLanguages}"
                               DisplayMemberPath="DisplayName"
                               SelectedValuePath="Culture"
                               SelectionChanged="LanguageCombo_SelectionChanged"/>
-                    <TextBlock x:Name="RecorderCountText" Margin="16,0,0,0" VerticalAlignment="Center"/>
+                    <Border Width="1" Background="{StaticResource ShellBorder}" Margin="14,6" Opacity="0.7"/>
+                    <TextBlock x:Name="RecorderCountText" VerticalAlignment="Center" Foreground="{StaticResource ShellMuted}"/>
                 </StackPanel>
             </StatusBarItem>
         </StatusBar>
 
-        <Grid Margin="16">
+        <Grid Margin="18">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="640"/>
-                <ColumnDefinition Width="16"/>
-                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="18"/>
+                <ColumnDefinition Width="360"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Preview + transport -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -49,131 +54,172 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <DockPanel Grid.Row="0" Margin="0,0,0,12">
+                <DockPanel Grid.Row="0" Margin="0,0,0,14">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <Button x:Name="SpawnRecorderButton"
-                                Content="{Binding [SpawnRecorder]}"
+                        <Button Content="{Binding [SpawnRecorder]}"
                                 Style="{StaticResource AccentButton}"
                                 Margin="0,0,8,0"
                                 Click="SpawnRecorder_Click"/>
-                        <Button x:Name="ExportUsbButton"
-                                Content="{Binding [ExportUsb]}"
-                                Style="{StaticResource StudioButton}"
+                        <Button Content="{Binding [ExportUsb]}"
+                                Style="{StaticResource GhostButton}"
                                 Click="ExportUsb_Click"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding [StudioDesk]}"
-                               FontSize="22"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding [StudioDesk]}" Style="{StaticResource HeroTitle}" VerticalAlignment="Center"/>
                 </DockPanel>
 
-                <Border Grid.Row="1"
-                        Background="Black"
-                        BorderBrush="{StaticResource ShellBorder}"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        ClipToBounds="True">
-                    <Grid>
-                        <vlc:VideoView x:Name="PreviewView"/>
-                        <TextBlock x:Name="PreviewPlaceholder"
-                                   Text="{Binding [PreviewOffline]}"
-                                   Foreground="{StaticResource ShellMuted}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   FontSize="16"/>
+                <Border Grid.Row="1" Style="{StaticResource PreviewFrame}">
+                    <Grid Background="{StaticResource ShellPreviewWell}">
+                        <!-- Hidden while offline so LibVLC host cannot flash white -->
+                        <vlc:VideoView x:Name="PreviewView" Visibility="Collapsed"/>
+                        <Border x:Name="PreviewPlaceholder"
+                                Background="{StaticResource ShellPreviewWell}">
+                            <TextBlock Text="{Binding [PreviewOffline]}"
+                                       Foreground="{StaticResource ShellMuted}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="15"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       Margin="24"/>
+                        </Border>
                     </Grid>
                 </Border>
 
-                <Grid Grid.Row="2" Margin="0,12,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <Border Grid.Row="2" Style="{StaticResource TransportRail}" Margin="0,14,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" x:Name="LiveButton" Content="{Binding [Live]}" Style="{StaticResource AccentButton}" Margin="0,0,8,0" Click="LiveToggle_Click"/>
-                    <Button Grid.Column="1" x:Name="RecordButton" Content="{Binding [Record]}" Style="{StaticResource DangerButton}" Margin="0,0,8,0" Click="RecordToggle_Click"/>
-                    <Button Grid.Column="2" x:Name="SnapshotButton" Content="{Binding [Snapshot]}" Style="{StaticResource StudioButton}" Margin="0,0,8,0" Click="Snapshot_Click"/>
-                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
-                        <CheckBox x:Name="Monitor2Check" Content="{Binding [Monitor2]}" Margin="0,0,12,0" Checked="Monitor2_Changed" Unchecked="Monitor2_Changed"/>
-                        <CheckBox x:Name="Monitor3Check" Content="{Binding [Monitor3]}" Checked="Monitor3_Changed" Unchecked="Monitor3_Changed"/>
-                    </StackPanel>
-                </Grid>
+                        <Button Grid.Column="0" x:Name="LiveButton"
+                                Content="{Binding [Live]}"
+                                Style="{StaticResource TransportAccentButton}"
+                                Margin="0,0,8,0"
+                                Click="LiveToggle_Click"/>
+                        <Button Grid.Column="1" x:Name="RecordButton"
+                                Content="{Binding [Record]}"
+                                Style="{StaticResource TransportDangerButton}"
+                                Margin="0,0,8,0"
+                                Click="RecordToggle_Click"/>
+                        <Button Grid.Column="2" x:Name="SnapshotButton"
+                                Content="{Binding [Snapshot]}"
+                                Style="{StaticResource TransportButton}"
+                                Margin="0,0,12,0"
+                                Click="Snapshot_Click"/>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,4,0">
+                            <CheckBox x:Name="Monitor2Check" Content="{Binding [Monitor2]}" Margin="0,0,14,0"
+                                      Checked="Monitor2_Changed" Unchecked="Monitor2_Changed"/>
+                            <CheckBox x:Name="Monitor3Check" Content="{Binding [Monitor3]}"
+                                      Checked="Monitor3_Changed" Unchecked="Monitor3_Changed"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </Grid>
 
-            <Border Grid.Column="2"
-                    Background="{StaticResource ShellSurface}"
-                    BorderBrush="{StaticResource ShellBorder}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="16">
+            <!-- PTZ console -->
+            <Border Grid.Column="2" Style="{StaticResource ConsolePanel}">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock Text="{Binding [CameraPtz]}" Style="{StaticResource SectionTitle}"/>
 
-                        <TextBlock Text="{Binding [Speed]}" Foreground="{StaticResource ShellMuted}" Margin="0,0,0,4"/>
-                        <DockPanel Margin="0,0,0,12">
-                            <TextBlock x:Name="SpeedLabel" DockPanel.Dock="Right" Text="0.5" Width="32" TextAlignment="Right"/>
-                            <Slider x:Name="SpeedSlider" Minimum="1" Maximum="10" Value="5" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="SpeedSlider_ValueChanged"/>
+                        <TextBlock Text="{Binding [Speed]}" Foreground="{StaticResource ShellMuted}" FontSize="12" Margin="0,0,0,6"/>
+                        <DockPanel Margin="0,0,0,16">
+                            <Border DockPanel.Dock="Right"
+                                    Background="{StaticResource ShellElevated}"
+                                    BorderBrush="{StaticResource ShellBorder}"
+                                    BorderThickness="1"
+                                    CornerRadius="2"
+                                    Padding="8,4"
+                                    Margin="8,0,0,0"
+                                    MinWidth="40">
+                                <TextBlock x:Name="SpeedLabel" Text="0.5" TextAlignment="Center" FontWeight="SemiBold"/>
+                            </Border>
+                            <Slider x:Name="SpeedSlider" Minimum="1" Maximum="10" Value="5"
+                                    TickFrequency="1" IsSnapToTickEnabled="True"
+                                    VerticalAlignment="Center"
+                                    ValueChanged="SpeedSlider_ValueChanged"/>
                         </DockPanel>
 
-                        <Grid HorizontalAlignment="Center" Margin="0,0,0,16">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                        <Border Background="{StaticResource ShellElevated}"
+                                BorderBrush="{StaticResource ShellBorderSoft}"
+                                BorderThickness="1"
+                                CornerRadius="3"
+                                Padding="10"
+                                Margin="0,0,0,14"
+                                HorizontalAlignment="Center">
+                            <StackPanel>
+                                <Grid HorizontalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
 
-                            <RepeatButton Grid.Row="0" Grid.Column="0" Content="↖" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="-1,1,0"/>
-                            <RepeatButton Grid.Row="0" Grid.Column="1" Content="↑" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,1,0"/>
-                            <RepeatButton Grid.Row="0" Grid.Column="2" Content="↗" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="1,1,0"/>
-                            <RepeatButton Grid.Row="1" Grid.Column="0" Content="←" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="-1,0,0"/>
-                            <Button Grid.Row="1" Grid.Column="1" Content="■" Style="{StaticResource StudioButton}" Width="40" Height="40" Margin="2" Click="PtzStop_Click"/>
-                            <RepeatButton Grid.Row="1" Grid.Column="2" Content="→" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="1,0,0"/>
-                            <RepeatButton Grid.Row="2" Grid.Column="0" Content="↙" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="-1,-1,0"/>
-                            <RepeatButton Grid.Row="2" Grid.Column="1" Content="↓" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,-1,0"/>
-                            <RepeatButton Grid.Row="2" Grid.Column="2" Content="↘" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="1,-1,0"/>
-                        </Grid>
+                                    <RepeatButton Grid.Row="0" Grid.Column="0" Content="↖" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="-1,1,0"/>
+                                    <RepeatButton Grid.Row="0" Grid.Column="1" Content="↑" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,1,0"/>
+                                    <RepeatButton Grid.Row="0" Grid.Column="2" Content="↗" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="1,1,0"/>
+                                    <RepeatButton Grid.Row="1" Grid.Column="0" Content="←" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="-1,0,0"/>
+                                    <Button Grid.Row="1" Grid.Column="1" Content="■" Style="{StaticResource PtzStopButton}" Click="PtzStop_Click"/>
+                                    <RepeatButton Grid.Row="1" Grid.Column="2" Content="→" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="1,0,0"/>
+                                    <RepeatButton Grid.Row="2" Grid.Column="0" Content="↙" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="-1,-1,0"/>
+                                    <RepeatButton Grid.Row="2" Grid.Column="1" Content="↓" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,-1,0"/>
+                                    <RepeatButton Grid.Row="2" Grid.Column="2" Content="↘" Style="{StaticResource PtzButton}" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="1,-1,0"/>
+                                </Grid>
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
-                            <RepeatButton x:Name="ZoomOutButton" Content="{Binding [ZoomOut]}" Style="{StaticResource PtzButton}" Width="80" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,0,-1"/>
-                            <RepeatButton x:Name="ZoomInButton" Content="{Binding [ZoomIn]}" Style="{StaticResource PtzButton}" Width="80" PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,0,1"/>
-                        </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                                    <RepeatButton Content="{Binding [ZoomOut]}" Style="{StaticResource PtzButton}" Width="102"
+                                                  PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,0,-1"/>
+                                    <RepeatButton Content="{Binding [ZoomIn]}" Style="{StaticResource PtzButton}" Width="102"
+                                                  PreviewMouseLeftButtonDown="Ptz_Down" PreviewMouseLeftButtonUp="Ptz_Up" Tag="0,0,1"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
 
                         <TextBlock Text="{Binding [Presets]}" Style="{StaticResource SectionTitle}"/>
                         <DockPanel Margin="0,0,0,8">
                             <Button DockPanel.Dock="Right" Content="{Binding [Save]}" Style="{StaticResource StudioButton}" Margin="8,0,0,0" Click="SavePreset_Click"/>
-                            <TextBox x:Name="PresetNameBox" />
+                            <TextBox x:Name="PresetNameBox"/>
                         </DockPanel>
 
                         <ListBox x:Name="PresetList"
-                                 Height="160"
+                                 Height="140"
                                  DisplayMemberPath="Name"
                                  MouseDoubleClick="PresetList_DoubleClick"/>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                             <Button Content="{Binding [Go]}" Style="{StaticResource AccentButton}" Margin="0,0,8,0" Click="GotoPreset_Click"/>
-                            <Button Content="{Binding [Delete]}" Style="{StaticResource StudioButton}" Click="DeletePreset_Click"/>
+                            <Button Content="{Binding [Delete]}" Style="{StaticResource GhostButton}" Click="DeletePreset_Click"/>
                         </StackPanel>
                     </StackPanel>
 
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,20,0,0">
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,24,0,0">
+                        <Border Height="1" Background="{StaticResource ShellBorderSoft}" Margin="0,0,0,14"/>
                         <TextBlock Text="{Binding [OpenRecorders]}" Style="{StaticResource SectionTitle}"/>
                         <TextBlock Text="{Binding [OpenRecordersHint]}"
                                    Foreground="{StaticResource ShellMuted}"
                                    TextWrapping="Wrap"
                                    FontSize="12"
+                                   LineHeight="18"
                                    Margin="0,0,0,8"/>
                         <ItemsControl x:Name="OpenRecordersList">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" Margin="0,2" Foreground="{StaticResource ShellForeground}"/>
+                                    <Border Background="{StaticResource ShellElevated}"
+                                            BorderBrush="{StaticResource ShellBorderSoft}"
+                                            BorderThickness="1"
+                                            CornerRadius="2"
+                                            Padding="8,6"
+                                            Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding}" Foreground="{StaticResource ShellForeground}" FontSize="12"/>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

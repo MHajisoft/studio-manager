@@ -52,6 +52,12 @@ Edit `src/StudioManager.App/appsettings.json`:
 
 `Assets/Fonts/IRANSans(FaNum).ttf` is embedded and applied app-wide (same pack URI pattern as sound-recorder).
 
+## Visual theme
+
+Cool mid-contrast dark desk (slate neutrals, deep teal Live/CTA, deep red Record — white labels).
+No bright cream/mustard fills; ComboBox popups are fully themed dark; preview stays dark until Live.
+Tokens: `App.xaml` (`Shell*` brushes).
+
 ## Agent skills
 
 WPF UI work in this repo should follow the personal Cursor skill **`wpf-app-design`**

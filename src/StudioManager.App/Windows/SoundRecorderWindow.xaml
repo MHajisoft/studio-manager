@@ -5,14 +5,14 @@
         xmlns:services="clr-namespace:StudioManager.App.Services"
         DataContext="{x:Static services:LocalizationManager.Instance}"
         FlowDirection="{Binding FlowDirection}"
-        Height="360"
-        Width="420"
-        MinHeight="320"
-        MinWidth="380"
+        Height="380"
+        Width="440"
+        MinHeight="340"
+        MinWidth="400"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
         Icon="pack://application:,,,/Assets/Images/app-icon.ico"
-        Background="{StaticResource ShellSurface}"
+        Background="{StaticResource ShellBackground}"
         Closed="Window_Closed">
 
     <Window.Resources>
@@ -22,9 +22,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
-                        <Border Background="Transparent" SnapsToDevicePixels="True">
-                            <Grid x:Name="Root" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Rectangle Fill="#2F9E7B" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                        <Border Background="{StaticResource ShellElevated}"
+                                BorderBrush="{StaticResource ShellBorderSoft}"
+                                BorderThickness="1"
+                                CornerRadius="1"
+                                SnapsToDevicePixels="True">
+                            <Grid x:Name="Root" Margin="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Rectangle Fill="{StaticResource ShellSuccess}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                     <Rectangle.Height>
                                         <MultiBinding Converter="{StaticResource SegmentHeightConverter}" ConverterParameter="Green">
                                             <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Value"/>
@@ -33,7 +37,7 @@
                                         </MultiBinding>
                                     </Rectangle.Height>
                                 </Rectangle>
-                                <Rectangle Fill="#D4A017" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                <Rectangle Fill="{StaticResource ShellWarn}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                     <Rectangle.Margin>
                                         <MultiBinding Converter="{StaticResource SegmentHeightConverter}" ConverterParameter="OrangeMargin">
                                             <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Value"/>
@@ -49,7 +53,7 @@
                                         </MultiBinding>
                                     </Rectangle.Height>
                                 </Rectangle>
-                                <Rectangle Fill="#D64545" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                <Rectangle Fill="{StaticResource ShellDanger}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
                                     <Rectangle.Margin>
                                         <MultiBinding Converter="{StaticResource SegmentHeightConverter}" ConverterParameter="RedMargin">
                                             <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Value"/>
@@ -73,52 +77,54 @@
         </Style>
     </Window.Resources>
 
-    <Grid x:Name="RootGrid" Margin="14">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+    <Border Style="{StaticResource ConsolePanel}" Margin="12">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
-            <ProgressBar x:Name="RightLevelMeter" Width="10" Margin="0,4,4,4" Minimum="0" Maximum="100" Orientation="Vertical" VerticalAlignment="Stretch" Style="{StaticResource LevelMeterStyle}"/>
-            <ProgressBar x:Name="LeftLevelMeter" Width="10" Margin="0,4,0,4" Minimum="0" Maximum="100" Orientation="Vertical" VerticalAlignment="Stretch" Style="{StaticResource LevelMeterStyle}"/>
-        </StackPanel>
+            <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
+                <ProgressBar x:Name="RightLevelMeter" Width="12" Margin="0,2,5,2" Minimum="0" Maximum="100" Orientation="Vertical" VerticalAlignment="Stretch" Style="{StaticResource LevelMeterStyle}"/>
+                <ProgressBar x:Name="LeftLevelMeter" Width="12" Margin="0,2,0,2" Minimum="0" Maximum="100" Orientation="Vertical" VerticalAlignment="Stretch" Style="{StaticResource LevelMeterStyle}"/>
+            </StackPanel>
 
-        <TextBlock x:Name="SourceLabel" Grid.Row="0" Grid.Column="0" Text="{Binding [Recorder_Source]}" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox Grid.Row="0" Grid.Column="1" x:Name="SourceComboBox" Margin="0,0,0,8" FlowDirection="LeftToRight" SelectionChanged="SourceComboBox_SelectionChanged"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding [Recorder_Source]}" VerticalAlignment="Center" Margin="0,0,10,10" Foreground="{StaticResource ShellMuted}" FontSize="12"/>
+            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="SourceComboBox" Margin="0,0,0,10" FlowDirection="LeftToRight" SelectionChanged="SourceComboBox_SelectionChanged"/>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [Recorder_Album]}" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="AlbumComboBox" Margin="0,0,0,8" IsEditable="True"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [Recorder_Album]}" VerticalAlignment="Center" Margin="0,0,10,10" Foreground="{StaticResource ShellMuted}" FontSize="12"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="AlbumComboBox" Margin="0,0,0,10" IsEditable="True"/>
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [Recorder_Genre]}" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="GenreComboBox" Margin="0,0,0,8" IsEditable="True"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [Recorder_Genre]}" VerticalAlignment="Center" Margin="0,0,10,10" Foreground="{StaticResource ShellMuted}" FontSize="12"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" x:Name="GenreComboBox" Margin="0,0,0,10" IsEditable="True"/>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [Recorder_Singer]}" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="SingerComboBox" Margin="0,0,0,8" IsEditable="True"
-                  SelectionChanged="SingerComboBox_SelectionChanged"
-                  TextBoxBase.TextChanged="SingerComboBox_TextChanged"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [Recorder_Singer]}" VerticalAlignment="Center" Margin="0,0,10,10" Foreground="{StaticResource ShellMuted}" FontSize="12"/>
+            <ComboBox Grid.Row="3" Grid.Column="1" x:Name="SingerComboBox" Margin="0,0,0,10" IsEditable="True"
+                      SelectionChanged="SingerComboBox_SelectionChanged"
+                      TextBoxBase.TextChanged="SingerComboBox_TextChanged"/>
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding [Recorder_File]}" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <TextBox Grid.Row="4" Grid.Column="1" x:Name="FileNameTextBox" Margin="0,0,0,8"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding [Recorder_File]}" VerticalAlignment="Center" Margin="0,0,10,10" Foreground="{StaticResource ShellMuted}" FontSize="12"/>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="FileNameTextBox" Margin="0,0,0,10"/>
 
-        <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0" FlowDirection="LeftToRight">
-            <TextBlock x:Name="RecordingTimeText" Text="00:00:00" Foreground="{StaticResource ShellDanger}" FontSize="28" VerticalAlignment="Center" Width="140" TextAlignment="Center"/>
-            <Button x:Name="StartButton" Width="56" Height="56" Margin="8,0" Style="{StaticResource StudioButton}" Click="StartButton_Click" ToolTip="{Binding [Recorder_Start]}">
-                <Image Source="pack://application:,,,/Assets/Images/start.png" Stretch="Uniform"/>
-            </Button>
-            <Button x:Name="StopButton" Width="56" Height="56" Margin="8,0" Style="{StaticResource StudioButton}" Click="StopButton_Click" ToolTip="{Binding [Recorder_Stop]}" Visibility="Collapsed">
-                <Image Source="pack://application:,,,/Assets/Images/stop.png" Stretch="Uniform"/>
-            </Button>
-        </StackPanel>
-    </Grid>
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0" FlowDirection="LeftToRight">
+                <TextBlock x:Name="RecordingTimeText" Text="00:00:00" Foreground="{StaticResource ShellDanger}" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center" Width="140" TextAlignment="Center"/>
+                <Button x:Name="StartButton" Width="56" Height="56" Margin="8,0" Style="{StaticResource AccentButton}" Click="StartButton_Click" ToolTip="{Binding [Recorder_Start]}" Padding="10">
+                    <Image Source="pack://application:,,,/Assets/Images/start.png" Stretch="Uniform"/>
+                </Button>
+                <Button x:Name="StopButton" Width="56" Height="56" Margin="8,0" Style="{StaticResource DangerButton}" Click="StopButton_Click" ToolTip="{Binding [Recorder_Stop]}" Visibility="Collapsed" Padding="10">
+                    <Image Source="pack://application:,,,/Assets/Images/stop.png" Stretch="Uniform"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

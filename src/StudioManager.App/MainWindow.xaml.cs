@@ -124,6 +124,7 @@ public partial class MainWindow : Window
             _mediaPlayer.Stop();
             _isLive = false;
             LiveButton.Content = _loc["Live"];
+            PreviewView.Visibility = Visibility.Collapsed;
             PreviewPlaceholder.Visibility = Visibility.Visible;
             StatusText.Text = _loc["StatusPreviewStopped"];
             return;
@@ -132,10 +133,11 @@ public partial class MainWindow : Window
         using var media = new Media(_libVlc, Camera.RtspUrl, FromType.FromLocation);
         media.AddOption(":rtsp-tcp");
         media.AddOption(":network-caching=300");
+        PreviewPlaceholder.Visibility = Visibility.Collapsed;
+        PreviewView.Visibility = Visibility.Visible;
         _mediaPlayer.Play(media);
         _isLive = true;
         LiveButton.Content = _loc["StopLive"];
-        PreviewPlaceholder.Visibility = Visibility.Collapsed;
         StatusText.Text = _loc.Format("StatusLive", Camera.Host);
         await Task.CompletedTask;
     }
