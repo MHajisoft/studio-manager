@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App_Title" xml:space="preserve"><value>مدیریت استودیو</value></data>
+  <data name="StudioDesk" xml:space="preserve"><value>میز استودیو</value></data>
+  <data name="SpawnRecorder" xml:space="preserve"><value>+ ضبط صوت</value></data>
+  <data name="ExportUsb" xml:space="preserve"><value>خروجی امروز ← USB</value></data>
+  <data name="PreviewOffline" xml:space="preserve"><value>پیش‌نمایش خاموش — Live را بزنید</value></data>
+  <data name="Live" xml:space="preserve"><value>زنده</value></data>
+  <data name="StopLive" xml:space="preserve"><value>قطع زنده</value></data>
+  <data name="Record" xml:space="preserve"><value>ضبط ویدیو</value></data>
+  <data name="StopRecord" xml:space="preserve"><value>توقف ضبط</value></data>
+  <data name="Snapshot" xml:space="preserve"><value>عکس فوری</value></data>
+  <data name="Monitor2" xml:space="preserve"><value>مانیتور ۲</value></data>
+  <data name="Monitor3" xml:space="preserve"><value>مانیتور ۳</value></data>
+  <data name="CameraPtz" xml:space="preserve"><value>دوربین / PTZ</value></data>
+  <data name="Speed" xml:space="preserve"><value>سرعت</value></data>
+  <data name="ZoomOut" xml:space="preserve"><value>زوم −</value></data>
+  <data name="ZoomIn" xml:space="preserve"><value>زوم +</value></data>
+  <data name="Presets" xml:space="preserve"><value>موقعیت‌ها</value></data>
+  <data name="Save" xml:space="preserve"><value>ذخیره</value></data>
+  <data name="Go" xml:space="preserve"><value>برو</value></data>
+  <data name="Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="OpenRecorders" xml:space="preserve"><value>ضبط‌کننده‌های باز</value></data>
+  <data name="OpenRecordersHint" xml:space="preserve"><value>هر کلیک یک پنجره مستقل باز می‌کند تا چند منبع همزمان ضبط شوند.</value></data>
+  <data name="Language" xml:space="preserve"><value>زبان</value></data>
+  <data name="StatusReady" xml:space="preserve"><value>استودیو آماده است</value></data>
+  <data name="RecordersCount" xml:space="preserve"><value>ضبط‌کننده: {0}</value></data>
+  <data name="StatusPreviewStopped" xml:space="preserve"><value>پیش‌نمایش متوقف شد</value></data>
+  <data name="StatusLive" xml:space="preserve"><value>زنده: {0}</value></data>
+  <data name="StatusRecordingStopped" xml:space="preserve"><value>ضبط ویدیو متوقف شد</value></data>
+  <data name="StatusRecording" xml:space="preserve"><value>در حال ضبط ← {0}</value></data>
+  <data name="StatusSnapshot" xml:space="preserve"><value>عکس ← {0}</value></data>
+  <data name="StatusPresetSaved" xml:space="preserve"><value>موقعیت ذخیره شد: {0}</value></data>
+  <data name="StatusGotoPreset" xml:space="preserve"><value>رفتن به موقعیت: {0}</value></data>
+  <data name="StatusDeletedPreset" xml:space="preserve"><value>موقعیت حذف شد: {0}</value></data>
+  <data name="StatusOpenedRecorder" xml:space="preserve"><value>ضبط صوت #{0} باز شد</value></data>
+  <data name="StatusCopied" xml:space="preserve"><value>{0} فایل به {1} کپی شد</value></data>
+  <data name="StatusPtzError" xml:space="preserve"><value>خطای PTZ: {0}</value></data>
+  <data name="StatusPtzStop" xml:space="preserve"><value>توقف PTZ: {0}</value></data>
+  <data name="Dialog_Preview" xml:space="preserve"><value>پیش‌نمایش</value></data>
+  <data name="Dialog_Recording" xml:space="preserve"><value>ضبط</value></data>
+  <data name="Dialog_Snapshot" xml:space="preserve"><value>عکس فوری</value></data>
+  <data name="Dialog_Preset" xml:space="preserve"><value>موقعیت</value></data>
+  <data name="Dialog_Export" xml:space="preserve"><value>خروجی</value></data>
+  <data name="Error_LibVlc" xml:space="preserve"><value>راه‌اندازی LibVLC ناموفق بود. بسته VideoLAN.LibVLC.Windows را بررسی کنید.</value></data>
+  <data name="Error_PresetNameRequired" xml:space="preserve"><value>نام موقعیت را وارد کنید.</value></data>
+  <data name="Error_NoUsb" xml:space="preserve"><value>هیچ فلش مموری متصل نیست.</value></data>
+  <data name="Error_MonitorMissing" xml:space="preserve"><value>مانیتور {0} در دسترس نیست.</value></data>
+  <data name="Info_Copied" xml:space="preserve"><value>{0} فایل به {1} کپی شد</value></data>
+  <data name="PreviewEngineUnavailable" xml:space="preserve"><value>موتور پیش‌نمایش در دسترس نیست: {0}</value></data>
+
+  <data name="Recorder_Title" xml:space="preserve"><value>ضبط صوت #{0}</value></data>
+  <data name="Recorder_TitleRecording" xml:space="preserve"><value>● ضبط #{0} — {1}</value></data>
+  <data name="Recorder_Source" xml:space="preserve"><value>منبع ضبط:</value></data>
+  <data name="Recorder_Album" xml:space="preserve"><value>نام آلبوم:</value></data>
+  <data name="Recorder_Genre" xml:space="preserve"><value>ژانر:</value></data>
+  <data name="Recorder_Singer" xml:space="preserve"><value>نام خواننده:</value></data>
+  <data name="Recorder_File" xml:space="preserve"><value>نام فایل:</value></data>
+  <data name="Recorder_Start" xml:space="preserve"><value>شروع ضبط</value></data>
+  <data name="Recorder_Stop" xml:space="preserve"><value>توقف ضبط</value></data>
+  <data name="Recorder_ErrorTitle" xml:space="preserve"><value>ضبط صوت</value></data>
+  <data name="Recorder_NoDevices" xml:space="preserve"><value>هیچ دستگاه ورودی صوتی یافت نشد.</value></data>
+  <data name="Recorder_StopFailed" xml:space="preserve"><value>خطا در توقف ضبط: {0}</value></data>
+  <data name="Recorder_StartFailed" xml:space="preserve"><value>خطا در ضبط صوت: {0}</value></data>
+  <data name="Recorder_Error" xml:space="preserve"><value>خطا در ضبط صوت: {0}</value></data>
+  <data name="Recorder_TagFailed" xml:space="preserve"><value>ذخیره برچسب‌ها با خطا مواجه شد: {0}</value></data>
+  <data name="Unknown_Singer" xml:space="preserve"><value>خواننده ناشناس</value></data>
+  <data name="Unknown_File" xml:space="preserve"><value>فایل ناشناس</value></data>
+  <data name="Unknown_Album" xml:space="preserve"><value>آلبوم نامشخص</value></data>
+  <data name="Default_Genre" xml:space="preserve"><value>ژانر پیش‌فرض</value></data>
+</root>

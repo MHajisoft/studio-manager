@@ -1,0 +1,29 @@
+---
+description: Keep README.md in sync whenever product behavior, structure, or setup changes
+alwaysApply: true
+---
+
+# Update README on changes
+
+When you change this repository in a way that affects how people use or understand the project, update `README.md` in the same change.
+
+## Update README when you
+
+- Add, remove, or rename projects / top-level folders
+- Change how to build, run, or configure the app (`appsettings`, CLI, dependencies)
+- Add or change user-facing features (camera, PTZ, recorders, export, localization, monitors)
+- Change localization workflow (new cultures, resx layout, RTL/LTR rules)
+- Change external requirements (ffmpeg, SDKs, fonts, LibVLC)
+
+## Do not churn the README for
+
+- Pure refactors with no behavior/setup change
+- Typos, formatting-only, or internal-only code moves
+- Transient debug / local-only experiments
+
+## How to update
+
+- Keep README accurate and concise; prefer tables/lists over long prose
+- Mirror real paths and commands from the repo (verify before writing)
+- If localization strings or cultures change, document the files and default culture
+- If a feature is removed, delete its README section instead of leaving stale text

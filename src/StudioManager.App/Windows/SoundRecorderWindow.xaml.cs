@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using NAudio.Lame;
 using NAudio.Wave;
+using StudioManager.App.Services;
 using StudioManager.Core.Audio;
 using StudioManager.Core.Services;
 
@@ -18,6 +19,7 @@ public partial class SoundRecorderWindow : Window
     private readonly AudioCatalogStore _catalogStore;
     private readonly DispatcherTimer _recordTimer;
     private readonly int _instanceNumber;
+    private readonly LocalizationManager _loc = LocalizationManager.Instance;
 
     private WaveInEvent? _waveIn;
     private LameMP3FileWriter? _mp3Writer;
@@ -35,7 +37,7 @@ public partial class SoundRecorderWindow : Window
         _instanceNumber = instanceNumber;
 
         InitializeComponent();
-        Title = $"Sound Recorder #{instanceNumber}";
+        ApplyLocalization();
 
         Directory.CreateDirectory(_options.SavePath);
         LoadAudioSources();
@@ -51,6 +53,15 @@ public partial class SoundRecorderWindow : Window
 
         if (_options.AutoStartRecording)
             StartRecording();
+    }
+
+    public void ApplyLocalization()
+    {
+        Title = _isRecording
+            ? _loc.Format("Recorder_TitleRecording", _instanceNumber, SourceComboBox.Text)
+            : _loc.Format("Recorder_Title", _instanceNumber);
+        StartButton.ToolTip = _loc["Recorder_Start"];
+        StopButton.ToolTip = _loc["Recorder_Stop"];
     }
 
     public void ForceStopWithoutShutdown()
@@ -75,12 +86,11 @@ public partial class SoundRecorderWindow : Window
 
         if (SourceComboBox.Items.Count == 0)
         {
-            MessageBox.Show("No audio input devices found.", "Sound Recorder", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(_loc["Recorder_NoDevices"], _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error);
             IsEnabled = false;
             return;
         }
 
-        // Prefer a different default device per instance when possible
         SourceComboBox.SelectedIndex = Math.Min(_instanceNumber - 1, SourceComboBox.Items.Count - 1);
     }
 
@@ -93,7 +103,7 @@ public partial class SoundRecorderWindow : Window
 
     private void UpdateFileName()
     {
-        var singer = string.IsNullOrWhiteSpace(SingerComboBox.Text) ? "Unknown" : SingerComboBox.Text.Trim();
+        var singer = string.IsNullOrWhiteSpace(SingerComboBox.Text) ? _loc["Unknown_Singer"] : SingerComboBox.Text.Trim();
         FileNameTextBox.Text = $"{singer}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
     }
 
@@ -119,7 +129,7 @@ public partial class SoundRecorderWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Stop failed: {ex.Message}", "Sound Recorder", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(_loc.Format("Recorder_StopFailed", ex.Message), _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -127,7 +137,8 @@ public partial class SoundRecorderWindow : Window
     {
         CleanupRecording(deleteFile: true);
 
-        var baseName = SanitizeFileName(string.IsNullOrWhiteSpace(FileNameTextBox.Text) ? "Unknown" : FileNameTextBox.Text.Trim());
+        var fallback = _loc["Unknown_Singer"];
+        var baseName = SanitizeFileName(string.IsNullOrWhiteSpace(FileNameTextBox.Text) ? fallback : FileNameTextBox.Text.Trim());
         _outputFilePath = GetUniquePath(Path.Combine(_options.SavePath, $"{baseName}.mp3"));
 
         try
@@ -148,13 +159,13 @@ public partial class SoundRecorderWindow : Window
             RecordingTimeText.Text = "00:00:00";
             _recordTimer.Stop();
             _recordTimer.Start();
-            Title = $"● REC #{_instanceNumber} — {SourceComboBox.Text}";
+            Title = _loc.Format("Recorder_TitleRecording", _instanceNumber, SourceComboBox.Text);
         }
         catch (Exception ex)
         {
             CleanupRecording(deleteFile: true);
             SetButtonStates(false);
-            MessageBox.Show($"Recording failed: {ex.Message}", "Sound Recorder", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(_loc.Format("Recorder_StartFailed", ex.Message), _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -222,7 +233,7 @@ public partial class SoundRecorderWindow : Window
             _recordTimer.Stop();
             LeftLevelMeter.Value = 0;
             RightLevelMeter.Value = 0;
-            Title = $"Sound Recorder #{_instanceNumber}";
+            Title = _loc.Format("Recorder_Title", _instanceNumber);
             SetButtonStates(false);
         });
 
@@ -232,7 +243,7 @@ public partial class SoundRecorderWindow : Window
         if (e.Exception is not null)
         {
             Dispatcher.BeginInvoke(() =>
-                MessageBox.Show($"Recording error: {e.Exception.Message}", "Sound Recorder", MessageBoxButton.OK, MessageBoxImage.Error));
+                MessageBox.Show(_loc.Format("Recorder_Error", e.Exception.Message), _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error));
             return;
         }
 
@@ -252,8 +263,8 @@ public partial class SoundRecorderWindow : Window
 
         try
         {
-            var desiredBase = SanitizeFileName(string.IsNullOrWhiteSpace(uiFileName) ? "Unknown" : uiFileName.Trim());
-            var albumFolder = SanitizePathSegment(string.IsNullOrWhiteSpace(uiAlbum) ? "Unknown Album" : uiAlbum.Trim());
+            var desiredBase = SanitizeFileName(string.IsNullOrWhiteSpace(uiFileName) ? _loc["Unknown_File"] : uiFileName.Trim());
+            var albumFolder = SanitizePathSegment(string.IsNullOrWhiteSpace(uiAlbum) ? _loc["Unknown_Album"] : uiAlbum.Trim());
             var albumDir = Path.Combine(_options.SavePath, albumFolder);
             Directory.CreateDirectory(albumDir);
             var desiredPath = GetUniquePath(Path.Combine(albumDir, $"{desiredBase}.mp3"));
@@ -279,9 +290,9 @@ public partial class SoundRecorderWindow : Window
             using (var file = TagLib.File.Create(_outputFilePath))
             {
                 file.Tag.Title = $"{uiGenre}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
-                file.Tag.Genres = [string.IsNullOrWhiteSpace(uiGenre) ? "General" : uiGenre];
-                file.Tag.Performers = [string.IsNullOrWhiteSpace(uiSinger) ? "Unknown" : uiSinger];
-                file.Tag.Album = string.IsNullOrWhiteSpace(uiAlbum) ? "Unknown Album" : uiAlbum;
+                file.Tag.Genres = [string.IsNullOrWhiteSpace(uiGenre) ? _loc["Default_Genre"] : uiGenre];
+                file.Tag.Performers = [string.IsNullOrWhiteSpace(uiSinger) ? _loc["Unknown_Singer"] : uiSinger];
+                file.Tag.Album = string.IsNullOrWhiteSpace(uiAlbum) ? _loc["Unknown_Album"] : uiAlbum;
                 file.Tag.Year = PersianDateHelper.GetPersianYear(DateTime.Now);
                 file.Save();
             }
@@ -305,7 +316,7 @@ public partial class SoundRecorderWindow : Window
         catch (Exception ex)
         {
             Dispatcher.BeginInvoke(() =>
-                MessageBox.Show($"Tag save failed: {ex.Message}", "Sound Recorder", MessageBoxButton.OK, MessageBoxImage.Error));
+                MessageBox.Show(_loc.Format("Recorder_TagFailed", ex.Message), _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error));
         }
     }
 

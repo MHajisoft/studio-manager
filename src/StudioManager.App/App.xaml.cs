@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StudioManager.App.Services;
 using StudioManager.App.Windows;
 using StudioManager.Core.Camera;
 using StudioManager.Core.Configuration;
@@ -33,6 +34,8 @@ public partial class App : System.Windows.Application
             configuration.GetSection(StudioOptions.SectionName).Bind(opts);
             if (string.IsNullOrWhiteSpace(opts.Audio.SavePath))
                 opts.Audio.SavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Recordings");
+            if (string.IsNullOrWhiteSpace(opts.Ui.Culture))
+                opts.Ui.Culture = "fa-IR";
             return opts;
         });
 
@@ -45,6 +48,9 @@ public partial class App : System.Windows.Application
         services.AddSingleton<MainWindow>();
 
         _services = services.BuildServiceProvider();
+
+        var options = _services.GetRequiredService<StudioOptions>();
+        LocalizationManager.Instance.Initialize(options.Ui.Culture);
 
         var main = _services.GetRequiredService<MainWindow>();
         main.Show();

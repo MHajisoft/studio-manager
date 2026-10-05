@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Startup="Application_Startup">
     <Application.Resources>
-        <FontFamily x:Key="StudioFont">./Assets/Fonts/#IRANSans</FontFamily>
+        <!-- Same IRANSans(FaNum) wiring as sound-recorder -->
+        <FontFamily x:Key="StudioFont">pack://application:,,,/Assets/Fonts/IRANSans(FaNum).ttf#IRANSans(FaNum)</FontFamily>
 
         <SolidColorBrush x:Key="ShellBackground" Color="#12141A"/>
         <SolidColorBrush x:Key="ShellSurface" Color="#1C1F27"/>
@@ -15,17 +16,47 @@
         <SolidColorBrush x:Key="ShellDanger" Color="#D64545"/>
         <SolidColorBrush x:Key="ShellWarn" Color="#D4A017"/>
 
-        <Style TargetType="Window">
+        <Style TargetType="{x:Type Control}">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
+        </Style>
+        <Style TargetType="{x:Type Window}">
             <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="Background" Value="{StaticResource ShellBackground}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
         </Style>
-
-        <Style TargetType="TextBlock">
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ShellForeground}"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
+            <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="{StaticResource ShellMuted}"/>
@@ -33,6 +64,7 @@
         </Style>
 
         <Style x:Key="StudioButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
@@ -79,6 +111,7 @@
         </Style>
 
         <Style x:Key="PtzButton" TargetType="RepeatButton">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="Width" Value="40"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="2"/>
@@ -112,22 +145,8 @@
             </Setter>
         </Style>
 
-        <Style TargetType="TextBox">
-            <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
-            <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
-            <Setter Property="CaretBrush" Value="{StaticResource ShellForeground}"/>
-            <Setter Property="Padding" Value="8,6"/>
-        </Style>
-
-        <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
-            <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
-            <Setter Property="Padding" Value="6,4"/>
-        </Style>
-
         <Style TargetType="ListBox">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
@@ -138,10 +157,12 @@
         </Style>
 
         <Style TargetType="CheckBox">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
         </Style>
 
         <Style TargetType="StatusBar">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="Background" Value="{StaticResource ShellSurface}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellMuted}"/>
         </Style>

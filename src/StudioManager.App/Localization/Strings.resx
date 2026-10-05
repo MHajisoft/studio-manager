@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="App_Title" xml:space="preserve"><value>Studio Manager</value></data>
+  <data name="StudioDesk" xml:space="preserve"><value>STUDIO DESK</value></data>
+  <data name="SpawnRecorder" xml:space="preserve"><value>+ Sound recorder</value></data>
+  <data name="ExportUsb" xml:space="preserve"><value>Export today → USB</value></data>
+  <data name="PreviewOffline" xml:space="preserve"><value>Preview offline — press Live</value></data>
+  <data name="Live" xml:space="preserve"><value>Live</value></data>
+  <data name="StopLive" xml:space="preserve"><value>Stop live</value></data>
+  <data name="Record" xml:space="preserve"><value>Record</value></data>
+  <data name="StopRecord" xml:space="preserve"><value>Stop rec</value></data>
+  <data name="Snapshot" xml:space="preserve"><value>Snapshot</value></data>
+  <data name="Monitor2" xml:space="preserve"><value>Monitor 2</value></data>
+  <data name="Monitor3" xml:space="preserve"><value>Monitor 3</value></data>
+  <data name="CameraPtz" xml:space="preserve"><value>CAMERA / PTZ</value></data>
+  <data name="Speed" xml:space="preserve"><value>Speed</value></data>
+  <data name="ZoomOut" xml:space="preserve"><value>Zoom −</value></data>
+  <data name="ZoomIn" xml:space="preserve"><value>Zoom +</value></data>
+  <data name="Presets" xml:space="preserve"><value>PRESETS</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Go" xml:space="preserve"><value>Go</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="OpenRecorders" xml:space="preserve"><value>OPEN RECORDERS</value></data>
+  <data name="OpenRecordersHint" xml:space="preserve"><value>Each click opens a new independent window so multiple inputs can record at once.</value></data>
+  <data name="Language" xml:space="preserve"><value>Language</value></data>
+  <data name="StatusReady" xml:space="preserve"><value>Studio ready</value></data>
+  <data name="RecordersCount" xml:space="preserve"><value>Recorders: {0}</value></data>
+  <data name="StatusPreviewStopped" xml:space="preserve"><value>Preview stopped</value></data>
+  <data name="StatusLive" xml:space="preserve"><value>Live: {0}</value></data>
+  <data name="StatusRecordingStopped" xml:space="preserve"><value>Video recording stopped</value></data>
+  <data name="StatusRecording" xml:space="preserve"><value>Recording → {0}</value></data>
+  <data name="StatusSnapshot" xml:space="preserve"><value>Snapshot → {0}</value></data>
+  <data name="StatusPresetSaved" xml:space="preserve"><value>Preset saved: {0}</value></data>
+  <data name="StatusGotoPreset" xml:space="preserve"><value>Goto preset: {0}</value></data>
+  <data name="StatusDeletedPreset" xml:space="preserve"><value>Deleted preset: {0}</value></data>
+  <data name="StatusOpenedRecorder" xml:space="preserve"><value>Opened sound recorder #{0}</value></data>
+  <data name="StatusCopied" xml:space="preserve"><value>Copied {0} file(s) to {1}</value></data>
+  <data name="StatusPtzError" xml:space="preserve"><value>PTZ error: {0}</value></data>
+  <data name="StatusPtzStop" xml:space="preserve"><value>PTZ stop: {0}</value></data>
+  <data name="Dialog_Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="Dialog_Recording" xml:space="preserve"><value>Recording</value></data>
+  <data name="Dialog_Snapshot" xml:space="preserve"><value>Snapshot</value></data>
+  <data name="Dialog_Preset" xml:space="preserve"><value>Preset</value></data>
+  <data name="Dialog_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="Error_LibVlc" xml:space="preserve"><value>LibVLC failed to initialize. Install/repair VideoLAN.LibVLC.Windows package output.</value></data>
+  <data name="Error_PresetNameRequired" xml:space="preserve"><value>Enter a preset name.</value></data>
+  <data name="Error_NoUsb" xml:space="preserve"><value>No removable USB drive found.</value></data>
+  <data name="Error_MonitorMissing" xml:space="preserve"><value>Monitor {0} is not available.</value></data>
+  <data name="Info_Copied" xml:space="preserve"><value>Copied {0} file(s) to {1}</value></data>
+  <data name="PreviewEngineUnavailable" xml:space="preserve"><value>Preview engine unavailable: {0}</value></data>
+
+  <data name="Recorder_Title" xml:space="preserve"><value>Sound Recorder #{0}</value></data>
+  <data name="Recorder_TitleRecording" xml:space="preserve"><value>● REC #{0} — {1}</value></data>
+  <data name="Recorder_Source" xml:space="preserve"><value>Source:</value></data>
+  <data name="Recorder_Album" xml:space="preserve"><value>Album:</value></data>
+  <data name="Recorder_Genre" xml:space="preserve"><value>Genre:</value></data>
+  <data name="Recorder_Singer" xml:space="preserve"><value>Singer:</value></data>
+  <data name="Recorder_File" xml:space="preserve"><value>File:</value></data>
+  <data name="Recorder_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Recorder_Stop" xml:space="preserve"><value>Stop</value></data>
+  <data name="Recorder_ErrorTitle" xml:space="preserve"><value>Sound Recorder</value></data>
+  <data name="Recorder_NoDevices" xml:space="preserve"><value>No audio input devices found.</value></data>
+  <data name="Recorder_StopFailed" xml:space="preserve"><value>Stop failed: {0}</value></data>
+  <data name="Recorder_StartFailed" xml:space="preserve"><value>Recording failed: {0}</value></data>
+  <data name="Recorder_Error" xml:space="preserve"><value>Recording error: {0}</value></data>
+  <data name="Recorder_TagFailed" xml:space="preserve"><value>Tag save failed: {0}</value></data>
+  <data name="Unknown_Singer" xml:space="preserve"><value>Unknown singer</value></data>
+  <data name="Unknown_File" xml:space="preserve"><value>Unknown file</value></data>
+  <data name="Unknown_Album" xml:space="preserve"><value>Unknown album</value></data>
+  <data name="Default_Genre" xml:space="preserve"><value>General</value></data>
+</root>

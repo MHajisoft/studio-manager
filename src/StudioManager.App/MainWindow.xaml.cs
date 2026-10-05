@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using LibVLCSharp.Shared;
 using Microsoft.Extensions.DependencyInjection;
+using StudioManager.App.Services;
 using StudioManager.App.Windows;
 using StudioManager.Core.Audio;
 using StudioManager.Core.Camera;
@@ -23,6 +24,7 @@ public partial class MainWindow : Window
     private readonly PresetStore _presets;
     private readonly ObservableCollection<string> _openRecorders = [];
     private readonly List<SoundRecorderWindow> _recorderWindows = [];
+    private readonly LocalizationManager _loc = LocalizationManager.Instance;
 
     private LibVLC? _libVlc;
     private MediaPlayer? _mediaPlayer;
@@ -30,6 +32,7 @@ public partial class MainWindow : Window
     private PreviewMonitorWindow? _monitor3;
     private bool _isLive;
     private bool _ptzBusy;
+    private bool _suppressLanguageChange;
 
     public MainWindow(
         StudioOptions options,
@@ -49,6 +52,14 @@ public partial class MainWindow : Window
         OpenRecordersList.ItemsSource = _openRecorders;
         SpeedLabel.Text = SpeedValue.ToString("0.0");
 
+        _suppressLanguageChange = true;
+        LanguageCombo.SelectedValue = _loc.Culture.Name;
+        _suppressLanguageChange = false;
+
+        StatusText.Text = _loc["StatusReady"];
+        RefreshRecorderCount();
+        _loc.CultureChanged += (_, _) => OnCultureChanged();
+
         try
         {
             LibVLCSharp.Shared.Core.Initialize();
@@ -58,13 +69,41 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            StatusText.Text = $"Preview engine unavailable: {ex.Message}";
+            StatusText.Text = _loc.Format("PreviewEngineUnavailable", ex.Message);
         }
     }
 
     private CameraConnectionOptions Camera => _options.Camera;
 
     private double SpeedValue => Math.Clamp(SpeedSlider.Value / 10.0, 0.1, 1.0);
+
+    private void OnCultureChanged()
+    {
+        RefreshTransportLabels();
+        RefreshRecorderCount();
+        foreach (var recorder in _recorderWindows)
+            recorder.ApplyLocalization();
+    }
+
+    private void RefreshTransportLabels()
+    {
+        LiveButton.Content = _isLive ? _loc["StopLive"] : _loc["Live"];
+        RecordButton.Content = _recording.IsRecording ? _loc["StopRecord"] : _loc["Record"];
+    }
+
+    private void RefreshRecorderCount() =>
+        RecorderCountText.Text = _loc.Format("RecordersCount", _recorderWindows.Count);
+
+    private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_suppressLanguageChange || LanguageCombo.SelectedValue is not string culture)
+            return;
+
+        _loc.SetCulture(culture);
+        _options.Ui.Culture = culture;
+        StatusText.Text = _loc["StatusReady"];
+        RefreshTransportLabels();
+    }
 
     private void SpeedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
@@ -76,7 +115,7 @@ public partial class MainWindow : Window
     {
         if (_mediaPlayer is null || _libVlc is null)
         {
-            MessageBox.Show("LibVLC failed to initialize. Install/repair VideoLAN.LibVLC.Windows package output.", "Preview", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(_loc["Error_LibVlc"], _loc["Dialog_Preview"], MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -84,9 +123,9 @@ public partial class MainWindow : Window
         {
             _mediaPlayer.Stop();
             _isLive = false;
-            LiveButton.Content = "Live";
+            LiveButton.Content = _loc["Live"];
             PreviewPlaceholder.Visibility = Visibility.Visible;
-            StatusText.Text = "Preview stopped";
+            StatusText.Text = _loc["StatusPreviewStopped"];
             return;
         }
 
@@ -95,9 +134,9 @@ public partial class MainWindow : Window
         media.AddOption(":network-caching=300");
         _mediaPlayer.Play(media);
         _isLive = true;
-        LiveButton.Content = "Stop live";
+        LiveButton.Content = _loc["StopLive"];
         PreviewPlaceholder.Visibility = Visibility.Collapsed;
-        StatusText.Text = $"Live: {Camera.Host}";
+        StatusText.Text = _loc.Format("StatusLive", Camera.Host);
         await Task.CompletedTask;
     }
 
@@ -108,8 +147,8 @@ public partial class MainWindow : Window
             if (_recording.IsRecording)
             {
                 await _recording.StopRecordingAsync();
-                RecordButton.Content = "Record";
-                StatusText.Text = "Video recording stopped";
+                RecordButton.Content = _loc["Record"];
+                StatusText.Text = _loc["StatusRecordingStopped"];
                 return;
             }
 
@@ -119,12 +158,12 @@ public partial class MainWindow : Window
             Directory.CreateDirectory(folder);
             var file = Path.Combine(folder, $"rec_{PersianDateHelper.GetPersianDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.mp4");
             await _recording.StartRecordingAsync(Camera, file);
-            RecordButton.Content = "Stop rec";
-            StatusText.Text = $"Recording → {file}";
+            RecordButton.Content = _loc["StopRecord"];
+            StatusText.Text = _loc.Format("StatusRecording", file);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Recording", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, _loc["Dialog_Recording"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -138,11 +177,11 @@ public partial class MainWindow : Window
             Directory.CreateDirectory(folder);
             var file = Path.Combine(folder, $"{PersianDateHelper.GetPersianDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.jpg");
             await _recording.CaptureSnapshotAsync(Camera, file);
-            StatusText.Text = $"Snapshot → {file}";
+            StatusText.Text = _loc.Format("StatusSnapshot", file);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Snapshot", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, _loc["Dialog_Snapshot"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -165,15 +204,12 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            StatusText.Text = $"PTZ error: {ex.Message}";
+            StatusText.Text = _loc.Format("StatusPtzError", ex.Message);
             _ptzBusy = false;
         }
     }
 
-    private async void Ptz_Up(object sender, MouseButtonEventArgs e)
-    {
-        await StopPtzAsync();
-    }
+    private async void Ptz_Up(object sender, MouseButtonEventArgs e) => await StopPtzAsync();
 
     private async void PtzStop_Click(object sender, RoutedEventArgs e) => await StopPtzAsync();
 
@@ -185,7 +221,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            StatusText.Text = $"PTZ stop: {ex.Message}";
+            StatusText.Text = _loc.Format("StatusPtzStop", ex.Message);
         }
         finally
         {
@@ -225,7 +261,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            StatusText.Text = $"PTZ error: {ex.Message}";
+            StatusText.Text = _loc.Format("StatusPtzError", ex.Message);
             _ptzBusy = false;
         }
     }
@@ -244,7 +280,7 @@ public partial class MainWindow : Window
         var name = PresetNameBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            MessageBox.Show("Enter a preset name.", "Preset", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(_loc["Error_PresetNameRequired"], _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
@@ -253,11 +289,11 @@ public partial class MainWindow : Window
             var token = await _ptz.SetPresetAsync(Camera, name);
             _presets.Add(new PtzPreset { Name = name, Token = token });
             PresetNameBox.Clear();
-            StatusText.Text = $"Preset saved: {name}";
+            StatusText.Text = _loc.Format("StatusPresetSaved", name);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Preset", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -267,11 +303,11 @@ public partial class MainWindow : Window
         try
         {
             await _ptz.GotoPresetAsync(Camera, preset.Token);
-            StatusText.Text = $"Goto preset: {preset.Name}";
+            StatusText.Text = _loc.Format("StatusGotoPreset", preset.Name);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Preset", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -284,11 +320,11 @@ public partial class MainWindow : Window
         {
             await _ptz.RemovePresetAsync(Camera, preset.Token);
             _presets.Remove(preset);
-            StatusText.Text = $"Deleted preset: {preset.Name}";
+            StatusText.Text = _loc.Format("StatusDeletedPreset", preset.Name);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Preset", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -308,7 +344,7 @@ public partial class MainWindow : Window
         _recorderWindows.Add(window);
         window.Show();
         RefreshRecorderList();
-        StatusText.Text = $"Opened sound recorder #{index}";
+        StatusText.Text = _loc.Format("StatusOpenedRecorder", index);
     }
 
     private void RefreshRecorderList()
@@ -316,7 +352,7 @@ public partial class MainWindow : Window
         _openRecorders.Clear();
         foreach (var w in _recorderWindows)
             _openRecorders.Add(w.Title);
-        RecorderCountText.Text = $"Recorders: {_recorderWindows.Count}";
+        RefreshRecorderCount();
     }
 
     private async void ExportUsb_Click(object sender, RoutedEventArgs e)
@@ -324,21 +360,21 @@ public partial class MainWindow : Window
         var drive = _export.FindRemovableDrive();
         if (drive is null)
         {
-            MessageBox.Show("No removable USB drive found.", "Export", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(_loc["Error_NoUsb"], _loc["Dialog_Export"], MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         try
         {
             var day = DateOnly.FromDateTime(DateTime.Today);
-            var dest = Path.Combine(drive, PersianDateHelper.GetPersianDate(DateTime.Today).Replace('-', '-'));
+            var dest = Path.Combine(drive, PersianDateHelper.GetPersianDate(DateTime.Today));
             var count = await _export.CopyTodaysFilesAsync(_options.MediaFolders, dest, day);
-            StatusText.Text = $"Copied {count} file(s) to {dest}";
-            MessageBox.Show($"Copied {count} file(s) to {dest}", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+            StatusText.Text = _loc.Format("StatusCopied", count, dest);
+            MessageBox.Show(_loc.Format("Info_Copied", count, dest), _loc["Dialog_Export"], MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Export", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, _loc["Dialog_Export"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -363,7 +399,7 @@ public partial class MainWindow : Window
         var screens = System.Windows.Forms.Screen.AllScreens;
         if (monitorIndex >= screens.Length)
         {
-            MessageBox.Show($"Monitor {monitorIndex + 1} is not available.", "Preview", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(_loc.Format("Error_MonitorMissing", monitorIndex + 1), _loc["Dialog_Preview"], MessageBoxButton.OK, MessageBoxImage.Information);
             if (monitorIndex == 1) Monitor2Check.IsChecked = false;
             if (monitorIndex == 2) Monitor3Check.IsChecked = false;
             return;
