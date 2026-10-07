@@ -38,7 +38,21 @@
   <data name="SpawnRecorder" xml:space="preserve"><value>Add sound recorder</value></data>
   <data name="ExportUsb" xml:space="preserve"><value>Export today → USB</value></data>
   <data name="Menu" xml:space="preserve"><value>Menu</value></data>
+  <data name="Menu_Paths" xml:space="preserve"><value>Save locations…</value></data>
   <data name="Menu_Catalog" xml:space="preserve"><value>Recorder lists…</value></data>
+  <data name="Menu_Presets" xml:space="preserve"><value>Camera presets…</value></data>
+  <data name="Presets_ManageTitle" xml:space="preserve"><value>Camera presets</value></data>
+  <data name="Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Error_PresetSelect" xml:space="preserve"><value>Select a preset first.</value></data>
+  <data name="Paths_Title" xml:space="preserve"><value>Save locations</value></data>
+  <data name="Paths_Video" xml:space="preserve"><value>Video folder:</value></data>
+  <data name="Paths_Snapshot" xml:space="preserve"><value>Snapshot folder:</value></data>
+  <data name="Paths_Audio" xml:space="preserve"><value>Audio folder:</value></data>
+  <data name="Paths_MediaFolders" xml:space="preserve"><value>USB scan folders:</value></data>
+  <data name="Paths_MediaFoldersHint" xml:space="preserve"><value>One folder path per line. Used when exporting today’s media to USB.</value></data>
+  <data name="StatusPathsSaved" xml:space="preserve"><value>Save locations updated</value></data>
+  <data name="MoreFeatures" xml:space="preserve"><value>MORE FEATURES</value></data>
+  <data name="MoreFeaturesHint" xml:space="preserve"><value>Reserved for upcoming studio features. Recorders live under the live preview beside PTZ.</value></data>
   <data name="Catalog_Title" xml:space="preserve"><value>Recorder lists</value></data>
   <data name="Catalog_Singers" xml:space="preserve"><value>Singers</value></data>
   <data name="Catalog_Albums" xml:space="preserve"><value>Albums</value></data>

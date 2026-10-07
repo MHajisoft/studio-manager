@@ -1,0 +1,67 @@
+<Window x:Class="StudioManager.App.Windows.SaveLocationsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:services="clr-namespace:StudioManager.App.Services"
+        DataContext="{x:Static services:LocalizationManager.Instance}"
+        FlowDirection="{Binding FlowDirection}"
+        Title="{Binding [Paths_Title]}"
+        Width="520"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="ToolWindow"
+        ShowInTaskbar="False"
+        Background="{StaticResource ShellBackground}"
+        Icon="pack://application:,,,/Assets/Images/app-icon.ico">
+    <Border Style="{StaticResource ConsolePanel}" Margin="14">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding [Paths_Video]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="VideoFolderBox" Margin="0,0,8,10" FlowDirection="LeftToRight"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="…" Style="{StaticResource GhostButton}" Width="40" Margin="0,0,0,10" Click="BrowseVideo_Click"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [Paths_Snapshot]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="SnapshotFolderBox" Margin="0,0,8,10" FlowDirection="LeftToRight"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="…" Style="{StaticResource GhostButton}" Width="40" Margin="0,0,0,10" Click="BrowseSnapshot_Click"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [Paths_Audio]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="AudioFolderBox" Margin="0,0,8,10" FlowDirection="LeftToRight"/>
+            <Button Grid.Row="2" Grid.Column="2" Content="…" Style="{StaticResource GhostButton}" Width="40" Margin="0,0,0,10" Click="BrowseAudio_Click"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [Paths_MediaFolders]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Top" Margin="0,4,12,10"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="MediaFoldersBox"
+                     Height="88"
+                     AcceptsReturn="True"
+                     TextWrapping="NoWrap"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Auto"
+                     Margin="0,0,0,8"
+                     FlowDirection="LeftToRight"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+                       Text="{Binding [Paths_MediaFoldersHint]}"
+                       Foreground="{StaticResource ShellMuted}"
+                       FontSize="11"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,14"/>
+
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="{Binding [Cancel]}" Style="{StaticResource GhostButton}" MinWidth="88" Margin="0,0,8,0" IsCancel="True" Click="Cancel_Click"/>
+                <Button Content="{Binding [Save]}" Style="{StaticResource AccentButton}" MinWidth="88" IsDefault="True" Click="Save_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

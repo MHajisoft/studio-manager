@@ -47,10 +47,8 @@ public partial class MainWindow : Window
         _presets = presets;
 
         InitializeComponent();
-        PresetList.ItemsSource = _presets.Presets;
+        PresetCombo.ItemsSource = _presets.Presets;
         SpeedLabel.Text = SpeedValue.ToString("0.0");
-
-        StatusText.Text = _loc["StatusReady"];
         RefreshRecorderCount();
         _loc.CultureChanged += (_, _) => OnCultureChanged();
 
@@ -63,7 +61,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            StatusText.Text = _loc.Format("PreviewEngineUnavailable", ex.Message);
+            MessageBox.Show(_loc.Format("PreviewEngineUnavailable", ex.Message), _loc["Dialog_Preview"], MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -93,10 +91,8 @@ public partial class MainWindow : Window
 
     private void RefreshRecorderCount()
     {
-        var text = _loc.Format("RecordersCount", _recorders.Count);
-        RecorderCountText.Text = text;
         if (RecorderCountInline is not null)
-            RecorderCountInline.Text = text;
+            RecorderCountInline.Text = _loc.Format("RecordersCount", _recorders.Count);
     }
 
     private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -125,7 +121,6 @@ public partial class MainWindow : Window
 
         _loc.SetCulture(culture);
         PersistCulture(culture);
-        StatusText.Text = _loc["StatusReady"];
         RefreshTransportLabels();
         SyncLanguageMenuChecks();
     }
@@ -134,8 +129,22 @@ public partial class MainWindow : Window
     {
         var catalog = App.Services.GetRequiredService<AudioCatalogStore>();
         var dialog = new CatalogEditorDialog(catalog) { Owner = this };
-        if (dialog.ShowDialog() == true)
-            StatusText.Text = _loc["StatusCatalogSaved"];
+        dialog.ShowDialog();
+    }
+
+    private void Paths_Click(object sender, RoutedEventArgs e)
+    {
+        var settings = App.Services.GetRequiredService<UiSettingsStore>();
+        var dialog = new SaveLocationsDialog(_options, settings) { Owner = this };
+        dialog.ShowDialog();
+    }
+
+    private void Presets_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new PresetsDialog(_ptz, Camera, _presets) { Owner = this };
+        dialog.ShowDialog();
+        PresetCombo.ItemsSource = null;
+        PresetCombo.ItemsSource = _presets.Presets;
     }
 
     private void SpeedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -159,7 +168,6 @@ public partial class MainWindow : Window
             LiveButton.Content = _loc["Live"];
             PreviewView.Visibility = Visibility.Collapsed;
             PreviewPlaceholder.Visibility = Visibility.Visible;
-            StatusText.Text = _loc["StatusPreviewStopped"];
             return;
         }
 
@@ -171,7 +179,6 @@ public partial class MainWindow : Window
         _mediaPlayer.Play(media);
         _isLive = true;
         LiveButton.Content = _loc["StopLive"];
-        StatusText.Text = _loc.Format("StatusLive", Camera.Host);
         await Task.CompletedTask;
     }
 
@@ -183,7 +190,6 @@ public partial class MainWindow : Window
             {
                 await _recording.StopRecordingAsync();
                 RecordButton.Content = _loc["Record"];
-                StatusText.Text = _loc["StatusRecordingStopped"];
                 return;
             }
 
@@ -194,7 +200,6 @@ public partial class MainWindow : Window
             var file = Path.Combine(folder, $"rec_{StudioDateHelper.FormatDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.mp4");
             await _recording.StartRecordingAsync(Camera, file);
             RecordButton.Content = _loc["StopRecord"];
-            StatusText.Text = _loc.Format("StatusRecording", file);
         }
         catch (Exception ex)
         {
@@ -212,7 +217,6 @@ public partial class MainWindow : Window
             Directory.CreateDirectory(folder);
             var file = Path.Combine(folder, $"{StudioDateHelper.FormatDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.jpg");
             await _recording.CaptureSnapshotAsync(Camera, file);
-            StatusText.Text = _loc.Format("StatusSnapshot", file);
         }
         catch (Exception ex)
         {
@@ -239,7 +243,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            StatusText.Text = _loc.Format("StatusPtzError", ex.Message);
+            MessageBox.Show(_loc.Format("StatusPtzError", ex.Message), _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Warning);
             _ptzBusy = false;
         }
     }
@@ -254,9 +258,9 @@ public partial class MainWindow : Window
         {
             await _ptz.StopAsync(Camera);
         }
-        catch (Exception ex)
+        catch
         {
-            StatusText.Text = _loc.Format("StatusPtzStop", ex.Message);
+            // ignore stop races
         }
         finally
         {
@@ -294,9 +298,8 @@ public partial class MainWindow : Window
         {
             await _ptz.ContinuousMoveAsync(Camera, velocity.Value);
         }
-        catch (Exception ex)
+        catch
         {
-            StatusText.Text = _loc.Format("StatusPtzError", ex.Message);
             _ptzBusy = false;
         }
     }
@@ -310,52 +313,17 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void SavePreset_Click(object sender, RoutedEventArgs e)
+    private async void GotoPreset_Click(object sender, RoutedEventArgs e)
     {
-        var name = PresetNameBox.Text.Trim();
-        if (string.IsNullOrWhiteSpace(name))
+        if (PresetCombo.SelectedItem is not PtzPreset preset)
         {
-            MessageBox.Show(_loc["Error_PresetNameRequired"], _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(_loc["Error_PresetSelect"], _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
         try
         {
-            var token = await _ptz.SetPresetAsync(Camera, name);
-            _presets.Add(new PtzPreset { Name = name, Token = token });
-            PresetNameBox.Clear();
-            StatusText.Text = _loc.Format("StatusPresetSaved", name);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message, _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
-    private async void GotoPreset_Click(object sender, RoutedEventArgs e)
-    {
-        if (PresetList.SelectedItem is not PtzPreset preset) return;
-        try
-        {
             await _ptz.GotoPresetAsync(Camera, preset.Token);
-            StatusText.Text = _loc.Format("StatusGotoPreset", preset.Name);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message, _loc["Dialog_Preset"], MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
-
-    private async void PresetList_DoubleClick(object sender, MouseButtonEventArgs e) => GotoPreset_Click(sender, e);
-
-    private async void DeletePreset_Click(object sender, RoutedEventArgs e)
-    {
-        if (PresetList.SelectedItem is not PtzPreset preset) return;
-        try
-        {
-            await _ptz.RemovePresetAsync(Camera, preset.Token);
-            _presets.Remove(preset);
-            StatusText.Text = _loc.Format("StatusDeletedPreset", preset.Name);
         }
         catch (Exception ex)
         {
@@ -372,7 +340,6 @@ public partial class MainWindow : Window
         _recorders.Add(row);
         RecorderRowsPanel.Children.Add(row);
         RefreshRecorderCount();
-        StatusText.Text = _loc.Format("StatusOpenedRecorder", index);
     }
 
     private void Recorder_SessionCompleted(object? sender, EventArgs e)
@@ -381,7 +348,6 @@ public partial class MainWindow : Window
             return;
 
         RemoveRecorder(row);
-        StatusText.Text = _loc["StatusRecorderSaved"];
     }
 
     private void RemoveRecorder(RecorderRowControl row)
@@ -413,7 +379,6 @@ public partial class MainWindow : Window
             var day = DateOnly.FromDateTime(DateTime.Today);
             var dest = Path.Combine(drive, StudioDateHelper.FormatDate(DateTime.Today));
             var count = await _export.CopyTodaysFilesAsync(_options.MediaFolders, dest, day);
-            StatusText.Text = _loc.Format("StatusCopied", count, dest);
             MessageBox.Show(_loc.Format("Info_Copied", count, dest), _loc["Dialog_Export"], MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)

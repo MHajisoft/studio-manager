@@ -38,7 +38,21 @@
   <data name="SpawnRecorder" xml:space="preserve"><value>افزودن ضبط صوت</value></data>
   <data name="ExportUsb" xml:space="preserve"><value>خروجی امروز ← USB</value></data>
   <data name="Menu" xml:space="preserve"><value>منو</value></data>
+  <data name="Menu_Paths" xml:space="preserve"><value>محل‌های ذخیره…</value></data>
   <data name="Menu_Catalog" xml:space="preserve"><value>فهرست‌های ضبط…</value></data>
+  <data name="Menu_Presets" xml:space="preserve"><value>موقعیت‌های دوربین…</value></data>
+  <data name="Presets_ManageTitle" xml:space="preserve"><value>موقعیت‌های دوربین</value></data>
+  <data name="Close" xml:space="preserve"><value>بستن</value></data>
+  <data name="Error_PresetSelect" xml:space="preserve"><value>ابتدا یک موقعیت را انتخاب کنید.</value></data>
+  <data name="Paths_Title" xml:space="preserve"><value>محل‌های ذخیره</value></data>
+  <data name="Paths_Video" xml:space="preserve"><value>پوشه ویدیو:</value></data>
+  <data name="Paths_Snapshot" xml:space="preserve"><value>پوشه عکس:</value></data>
+  <data name="Paths_Audio" xml:space="preserve"><value>پوشه صوت:</value></data>
+  <data name="Paths_MediaFolders" xml:space="preserve"><value>پوشه‌های خروجی USB:</value></data>
+  <data name="Paths_MediaFoldersHint" xml:space="preserve"><value>هر خط یک مسیر پوشه. برای کپی فایل‌های امروز به USB استفاده می‌شود.</value></data>
+  <data name="StatusPathsSaved" xml:space="preserve"><value>محل‌های ذخیره به‌روز شد</value></data>
+  <data name="MoreFeatures" xml:space="preserve"><value>امکانات بیشتر</value></data>
+  <data name="MoreFeaturesHint" xml:space="preserve"><value>برای امکانات بعدی استودیو رزرو شده است. ضبط‌کننده‌ها زیر پیش‌نمایش زنده و کنار PTZ هستند.</value></data>
   <data name="Catalog_Title" xml:space="preserve"><value>فهرست‌های ضبط</value></data>
   <data name="Catalog_Singers" xml:space="preserve"><value>خواننده‌ها</value></data>
   <data name="Catalog_Albums" xml:space="preserve"><value>آلبوم‌ها</value></data>

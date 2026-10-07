@@ -34,13 +34,10 @@ public partial class App : System.Windows.Application
             configuration.GetSection(StudioOptions.SectionName).Bind(opts);
             if (string.IsNullOrWhiteSpace(opts.Audio.SavePath))
                 opts.Audio.SavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Recordings");
-
-            var savedCulture = sp.GetRequiredService<UiSettingsStore>().LoadCulture();
-            if (!string.IsNullOrWhiteSpace(savedCulture))
-                opts.Ui.Culture = savedCulture;
-            else if (string.IsNullOrWhiteSpace(opts.Ui.Culture))
+            if (string.IsNullOrWhiteSpace(opts.Ui.Culture))
                 opts.Ui.Culture = "fa-IR";
 
+            sp.GetRequiredService<UiSettingsStore>().ApplyTo(opts);
             return opts;
         });
 

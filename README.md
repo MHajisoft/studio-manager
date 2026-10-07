@@ -4,9 +4,10 @@ WPF desktop studio console (.NET 10) that replaces the Delphi **HCP_64** IP CCTV
 
 ## Features
 
-- **Single studio desk** — live RTSP preview (LibVLC), video record/snapshot (FFmpeg), ONVIF PTZ, presets
-- **Hamburger menu** — USB export, language, and editor for recorder catalog lists (singers / albums / genres)
-- **Compact sound recorders** — FAB adds a row (file title, timer, icon, fixed-height EQ); hover tooltip; click opens modal metadata; stop saves and removes the row
+- **Camera desk (main column)** — live RTSP preview, video record/snapshot, compact ONVIF PTZ + sound recorders under preview; presets via dropdown + manage dialog
+- **Side column** — reserved for upcoming studio features
+- **Hamburger menu** — USB export, save locations, recorder catalog, camera presets, language
+- **Compact sound recorders** — under live beside PTZ; “Add” button; file title, timer, icon, fixed-height EQ; hover tooltip; click opens modal metadata; stop saves and removes the row
 - **Secondary monitors** — optional fullscreen preview on monitor 2 / 3
 - **Localization** — `fa-IR` (RTL, default) and `en-US` (LTR), switchable from the menu (persisted under `%LocalAppData%\StudioManager\`); dates in file names use Persian calendar for `fa-*` and Gregorian otherwise; IRANSans(FaNum) font from sound-recorder
 
@@ -47,7 +48,7 @@ Edit `src/StudioManager.App/appsettings.json`:
 
 - Resources: `Localization/Strings.resx` (English), `Localization/Strings.fa-IR.resx` (Persian)
 - Runtime manager: `Services/LocalizationManager` — updates strings, `FlowDirection` (RTL/LTR), and thread cultures
-- Chosen culture is saved to `%LocalAppData%\StudioManager\ui-settings.json` and restored on next launch (overrides `Studio:Ui:Culture`)
+- Chosen culture and save locations are saved to `%LocalAppData%\StudioManager\ui-settings.json` and restored on next launch (override `appsettings`)
 - Dates: `StudioDateHelper` — Jalali for `fa-*`, `yyyy-MM-dd` Gregorian for other cultures
 - Add new UI text as a resx key in **both** files; bind with `{Binding [Key]}` or `_loc["Key"]` / `_loc.Format(...)`
 
