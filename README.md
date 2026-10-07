@@ -1,11 +1,11 @@
 # Studio Manager
 
-WPF desktop studio console (.NET 10) that replaces the Delphi **HCP_64** IP CCTV desk and embeds the **sound-recorder** workflow as multiple independent windows.
+WPF desktop studio console (.NET 10) that replaces the Delphi **HCP_64** IP CCTV desk and embeds the **sound-recorder** workflow as inline multi-instance rows.
 
 ## Features
 
 - **Single studio desk** — live RTSP preview (LibVLC), video record/snapshot (FFmpeg), ONVIF PTZ, presets, USB export of today’s media
-- **Multi-instance sound recorders** — each “+ Sound recorder” opens a new window so several inputs can record at once (NAudio → MP3 + tags)
+- **Compact sound recorders** — strip under transport (source title, timer, icon, EQ under title); hover tooltip; click opens modal metadata; stop saves and removes the row
 - **Secondary monitors** — optional fullscreen preview on monitor 2 / 3
 - **Localization** — `fa-IR` (RTL, default) and `en-US` (LTR), switchable from the status bar; IRANSans(FaNum) font from sound-recorder
 

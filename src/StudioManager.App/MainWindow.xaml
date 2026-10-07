@@ -5,10 +5,10 @@
         xmlns:services="clr-namespace:StudioManager.App.Services"
         Title="{Binding [App_Title]}"
         FlowDirection="{Binding FlowDirection}"
-        Height="860"
+        Height="820"
         Width="1440"
-        MinHeight="700"
-        MinWidth="1180"
+        MinHeight="640"
+        MinWidth="1100"
         WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/Assets/Images/app-icon.ico"
         DataContext="{x:Static services:LocalizationManager.Instance}"
@@ -46,12 +46,13 @@
                 <ColumnDefinition Width="360"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Preview + transport -->
+            <!-- Preview + transport + recorders -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*" MinHeight="180"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" MinHeight="72"/>
                 </Grid.RowDefinitions>
 
                 <DockPanel Grid.Row="0" Margin="0,0,0,14">
@@ -117,12 +118,37 @@
                         </StackPanel>
                     </Grid>
                 </Border>
+
+                <Border Grid.Row="3"
+                        Style="{StaticResource ConsolePanel}"
+                        Margin="0,12,0,0"
+                        Padding="12,10">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding [OpenRecorders]}"
+                                       Style="{StaticResource SectionTitle}"
+                                       VerticalAlignment="Center"
+                                       Margin="0"/>
+                            <TextBlock x:Name="RecorderCountInline"
+                                       DockPanel.Dock="Right"
+                                       Foreground="{StaticResource ShellMuted}"
+                                       FontSize="12"
+                                       VerticalAlignment="Center"
+                                       Margin="12,0,0,0"/>
+                        </DockPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      MaxHeight="160">
+                            <StackPanel x:Name="RecorderRowsPanel"/>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
             </Grid>
 
             <!-- PTZ console -->
             <Border Grid.Column="2" Style="{StaticResource ConsolePanel}">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
                         <TextBlock Text="{Binding [CameraPtz]}" Style="{StaticResource SectionTitle}"/>
 
                         <TextBlock Text="{Binding [Speed]}" Foreground="{StaticResource ShellMuted}" FontSize="12" Margin="0,0,0,6"/>
@@ -199,34 +225,7 @@
                             <Button Content="{Binding [Delete]}" Style="{StaticResource GhostButton}" Click="DeletePreset_Click"/>
                         </StackPanel>
                     </StackPanel>
-
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,24,0,0">
-                        <Border Height="1" Background="{StaticResource ShellBorderSoft}" Margin="0,0,0,14"/>
-                        <TextBlock Text="{Binding [OpenRecorders]}" Style="{StaticResource SectionTitle}"/>
-                        <TextBlock Text="{Binding [OpenRecordersHint]}"
-                                   Foreground="{StaticResource ShellMuted}"
-                                   TextWrapping="Wrap"
-                                   FontSize="12"
-                                   LineHeight="18"
-                                   Margin="0,0,0,8"/>
-                        <ItemsControl x:Name="OpenRecordersList">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="{StaticResource ShellElevated}"
-                                            BorderBrush="{StaticResource ShellBorderSoft}"
-                                            BorderThickness="1"
-                                            CornerRadius="2"
-                                            Padding="8,6"
-                                            Margin="0,0,0,4">
-                                        <TextBlock Text="{Binding}" Foreground="{StaticResource ShellForeground}" FontSize="12"/>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-
-                    <Border/>
-                </DockPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
     </DockPanel>

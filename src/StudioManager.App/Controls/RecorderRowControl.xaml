@@ -1,0 +1,138 @@
+<UserControl x:Class="StudioManager.App.Controls.RecorderRowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:services="clr-namespace:StudioManager.App.Services"
+             DataContext="{x:Static services:LocalizationManager.Instance}"
+             MouseLeftButtonUp="Row_Click">
+    <UserControl.Resources>
+        <Style x:Key="IconRecordButton" TargetType="Button" BasedOn="{StaticResource AccentButton}">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="MinWidth" Value="32"/>
+        </Style>
+        <Style x:Key="IconStopButton" TargetType="Button" BasedOn="{StaticResource DangerButton}">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="MinWidth" Value="32"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Border x:Name="RootBorder"
+            Background="{StaticResource ShellElevated}"
+            BorderBrush="{StaticResource ShellBorder}"
+            BorderThickness="1"
+            CornerRadius="3"
+            Margin="0,0,0,4"
+            Padding="8,6"
+            Cursor="Hand"
+            ToolTipService.InitialShowDelay="450"
+            ToolTipService.BetweenShowDelay="100"
+            ToolTipService.ShowDuration="30000">
+        <Border.ToolTip>
+            <ToolTip>
+                <Border Padding="2,0" MinWidth="220">
+                    <StackPanel>
+                        <TextBlock Text="{Binding [Recorder_MetadataTitle]}"
+                                   FontWeight="SemiBold"
+                                   FontSize="12"
+                                   Margin="0,0,0,8"
+                                   Foreground="{StaticResource ShellAccent}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding [Recorder_Source]}" Foreground="{StaticResource ShellMuted}" FontSize="11" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TipSource" Foreground="{StaticResource ShellForeground}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [Recorder_Singer]}" Foreground="{StaticResource ShellMuted}" FontSize="11" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TipSinger" Foreground="{StaticResource ShellForeground}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [Recorder_Album]}" Foreground="{StaticResource ShellMuted}" FontSize="11" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TipAlbum" Foreground="{StaticResource ShellForeground}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [Recorder_Genre]}" Foreground="{StaticResource ShellMuted}" FontSize="11" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="TipGenre" Foreground="{StaticResource ShellForeground}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,5"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding [Recorder_File]}" Foreground="{StaticResource ShellMuted}" FontSize="11" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="TipFile" Foreground="{StaticResource ShellForeground}" FontSize="11" TextWrapping="Wrap"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </ToolTip>
+        </Border.ToolTip>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title (file name) -->
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
+                <Ellipse x:Name="RecDot" Width="7" Height="7" Fill="{StaticResource ShellMuted}" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TitleText"
+                           Text="—"
+                           FontWeight="SemiBold"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"/>
+            </StackPanel>
+
+            <!-- EQ fills under the title only -->
+            <UniformGrid x:Name="EqGrid"
+                         Grid.Row="1"
+                         Grid.Column="0"
+                         Rows="1"
+                         Columns="24"
+                         Height="4"
+                         Margin="14,4,8,0"
+                         VerticalAlignment="Center"
+                         FlowDirection="LeftToRight"/>
+
+            <TextBlock x:Name="TimerText"
+                       Grid.Row="0"
+                       Grid.RowSpan="2"
+                       Grid.Column="1"
+                       Text="00:00:00"
+                       FontFamily="Consolas"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="4,0,8,0"
+                       Width="70"
+                       TextAlignment="Center"
+                       FlowDirection="LeftToRight"/>
+
+            <Button x:Name="ToggleRecordButton"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="2"
+                    Style="{StaticResource IconRecordButton}"
+                    VerticalAlignment="Center"
+                    Click="ToggleRecordButton_Click"
+                    ToolTip="{Binding [Recorder_Start]}">
+                <Image x:Name="ToggleRecordIcon"
+                       Source="pack://application:,,,/Assets/Images/start.png"
+                       Stretch="Uniform"/>
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

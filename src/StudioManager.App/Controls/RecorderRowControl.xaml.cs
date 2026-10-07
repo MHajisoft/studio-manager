@@ -4,51 +4,82 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using NAudio.Lame;
 using NAudio.Wave;
 using StudioManager.App.Services;
+using StudioManager.App.Windows;
 using StudioManager.Core.Audio;
 using StudioManager.Core.Services;
+using UserControl = System.Windows.Controls.UserControl;
+using Brush = System.Windows.Media.Brush;
 
-namespace StudioManager.App.Windows;
+namespace StudioManager.App.Controls;
 
-public partial class SoundRecorderWindow : Window
+public partial class RecorderRowControl : UserControl
 {
+    private const int EqBarCount = 24;
+
     private readonly AudioRecorderOptions _options;
     private readonly AudioCatalogStore _catalogStore;
     private readonly DispatcherTimer _recordTimer;
     private readonly int _instanceNumber;
     private readonly LocalizationManager _loc = LocalizationManager.Instance;
+    private readonly Brush _dotIdle;
+    private readonly Brush _dotLive;
+    private readonly Brush[] _eqBrushes;
+    private readonly Border[] _eqBars = new Border[EqBarCount];
+    private readonly List<string> _sources = [];
 
     private WaveInEvent? _waveIn;
     private LameMP3FileWriter? _mp3Writer;
     private string? _outputFilePath;
     private bool _isRecording;
-    private bool _isSourceChanging;
-    private bool _closeAfterSave;
     private bool _forceStopWithoutShutdown;
+    private bool _dialogOpen;
+    private int _sourceIndex;
+    private string _sourceName = "";
+    private string _album = "";
+    private string _genre = "";
+    private string _singer = "";
+    private string _fileName = "";
     private TimeSpan _elapsed;
 
-    public SoundRecorderWindow(AudioRecorderOptions options, AudioCatalogStore catalogStore, int instanceNumber)
+    public event EventHandler? SessionCompleted;
+
+    public int InstanceNumber => _instanceNumber;
+
+    public RecorderRowControl(AudioRecorderOptions options, AudioCatalogStore catalogStore, int instanceNumber)
     {
         _options = options;
         _catalogStore = catalogStore;
         _instanceNumber = instanceNumber;
 
         InitializeComponent();
-        ApplyLocalization();
 
+        _dotIdle = (Brush)FindResource("ShellMuted");
+        _dotLive = (Brush)FindResource("ShellDanger");
+        _eqBrushes =
+        [
+            (Brush)FindResource("ShellSuccess"),
+            (Brush)FindResource("ShellWarn"),
+            (Brush)FindResource("ShellDanger")
+        ];
+
+        BuildEqualizer();
         Directory.CreateDirectory(_options.SavePath);
         LoadAudioSources();
-        BindCatalog();
-        UpdateFileName();
+        _fileName = BuildDefaultFileName(_singer);
+        RefreshRowLabels();
+        ApplyLocalization();
 
         _recordTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _recordTimer.Tick += (_, _) =>
         {
             _elapsed = _elapsed.Add(TimeSpan.FromSeconds(1));
-            RecordingTimeText.Text = _elapsed.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture);
+            TimerText.Text = _elapsed.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture);
         };
 
         if (_options.AutoStartRecording)
@@ -57,11 +88,8 @@ public partial class SoundRecorderWindow : Window
 
     public void ApplyLocalization()
     {
-        Title = _isRecording
-            ? _loc.Format("Recorder_TitleRecording", _instanceNumber, SourceComboBox.Text)
-            : _loc.Format("Recorder_Title", _instanceNumber);
-        StartButton.ToolTip = _loc["Recorder_Start"];
-        StopButton.ToolTip = _loc["Recorder_Stop"];
+        ToggleRecordButton.ToolTip = _isRecording ? _loc["Recorder_Stop"] : _loc["Recorder_Start"];
+        RefreshRowLabels();
     }
 
     public void ForceStopWithoutShutdown()
@@ -78,54 +106,155 @@ public partial class SoundRecorderWindow : Window
         }
     }
 
+    private void BuildEqualizer()
+    {
+        EqGrid.Children.Clear();
+        for (var i = 0; i < EqBarCount; i++)
+        {
+            var brush = i < EqBarCount * 0.45 ? _eqBrushes[0]
+                : i < EqBarCount * 0.75 ? _eqBrushes[1]
+                : _eqBrushes[2];
+
+            var bar = new Border
+            {
+                Background = brush,
+                CornerRadius = new CornerRadius(0.5),
+                Margin = new Thickness(0.5, 0, 0.5, 0),
+                Height = 3,
+                VerticalAlignment = VerticalAlignment.Center,
+                Opacity = 0.22
+            };
+            _eqBars[i] = bar;
+            EqGrid.Children.Add(bar);
+        }
+    }
+
     private void LoadAudioSources()
     {
-        SourceComboBox.Items.Clear();
+        _sources.Clear();
         for (var i = 0; i < WaveIn.DeviceCount; i++)
-            SourceComboBox.Items.Add(WaveIn.GetCapabilities(i).ProductName);
+            _sources.Add(WaveIn.GetCapabilities(i).ProductName);
 
-        if (SourceComboBox.Items.Count == 0)
+        if (_sources.Count == 0)
         {
             MessageBox.Show(_loc["Recorder_NoDevices"], _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error);
             IsEnabled = false;
             return;
         }
 
-        SourceComboBox.SelectedIndex = Math.Min(_instanceNumber - 1, SourceComboBox.Items.Count - 1);
+        _sourceIndex = Math.Min(_instanceNumber - 1, _sources.Count - 1);
+        _sourceName = _sources[_sourceIndex];
     }
 
-    private void BindCatalog()
+    private string BuildDefaultFileName(string? singer)
     {
-        GenreComboBox.ItemsSource = _catalogStore.Catalog.Genres;
-        SingerComboBox.ItemsSource = _catalogStore.Catalog.Singers;
-        AlbumComboBox.ItemsSource = _catalogStore.Catalog.Albums;
+        var name = string.IsNullOrWhiteSpace(singer) ? _loc["Unknown_Singer"] : singer.Trim();
+        return $"{name}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
     }
 
-    private void UpdateFileName()
+    private void RefreshRowLabels()
     {
-        var singer = string.IsNullOrWhiteSpace(SingerComboBox.Text) ? _loc["Unknown_Singer"] : SingerComboBox.Text.Trim();
-        FileNameTextBox.Text = $"{singer}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
+        TitleText.Text = string.IsNullOrWhiteSpace(_fileName)
+            ? _loc.Format("Recorder_Title", _instanceNumber)
+            : _fileName;
+
+        TipSource.Text = string.IsNullOrWhiteSpace(_sourceName) ? "—" : _sourceName;
+        TipSinger.Text = string.IsNullOrWhiteSpace(_singer) ? "—" : _singer;
+        TipAlbum.Text = string.IsNullOrWhiteSpace(_album) ? "—" : _album;
+        TipGenre.Text = string.IsNullOrWhiteSpace(_genre) ? "—" : _genre;
+        TipFile.Text = string.IsNullOrWhiteSpace(_fileName) ? "—" : _fileName;
     }
 
-    private void SetButtonStates(bool isRecording)
+    private void SetRecordingUi(bool isRecording)
     {
-        StartButton.Visibility = isRecording ? Visibility.Collapsed : Visibility.Visible;
-        StopButton.Visibility = isRecording ? Visibility.Visible : Visibility.Collapsed;
+        _isRecording = isRecording;
+        ToggleRecordButton.Style = (Style)FindResource(isRecording ? "IconStopButton" : "IconRecordButton");
+        ToggleRecordButton.ToolTip = isRecording ? _loc["Recorder_Stop"] : _loc["Recorder_Start"];
+        ToggleRecordIcon.Source = new System.Windows.Media.Imaging.BitmapImage(
+            new Uri(isRecording
+                ? "pack://application:,,,/Assets/Images/stop.png"
+                : "pack://application:,,,/Assets/Images/start.png"));
+        RecDot.Fill = isRecording ? _dotLive : _dotIdle;
     }
 
-    private void SingerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateFileName();
+    private void Row_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (_dialogOpen) return;
+        if (e.OriginalSource is DependencyObject source && IsDescendantOf(source, ToggleRecordButton))
+            return;
 
-    private void SingerComboBox_TextChanged(object sender, TextChangedEventArgs e) => UpdateFileName();
+        OpenMetadataDialog();
+    }
 
-    private void StartButton_Click(object sender, RoutedEventArgs e) => StartRecording();
+    private static bool IsDescendantOf(DependencyObject? child, DependencyObject ancestor)
+    {
+        while (child is not null)
+        {
+            if (ReferenceEquals(child, ancestor))
+                return true;
+            child = VisualTreeHelper.GetParent(child);
+        }
 
-    private void StopButton_Click(object sender, RoutedEventArgs e)
+        return false;
+    }
+
+    private void OpenMetadataDialog()
+    {
+        var owner = Window.GetWindow(this);
+        var dialog = new RecorderMetadataDialog(
+            _catalogStore,
+            _sources,
+            _sourceIndex,
+            _album,
+            _genre,
+            _singer,
+            _fileName,
+            lockSource: _isRecording)
+        {
+            Owner = owner
+        };
+
+        _dialogOpen = true;
+        try
+        {
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var sourceChanged = dialog.SourceIndex != _sourceIndex;
+            _sourceIndex = dialog.SourceIndex;
+            _sourceName = dialog.SourceName;
+            _album = dialog.Album;
+            _genre = dialog.Genre;
+            _singer = dialog.Singer;
+            _fileName = dialog.FileName;
+            RefreshRowLabels();
+
+            if (sourceChanged && _isRecording)
+            {
+                CleanupRecording(deleteFile: true);
+                StartRecording();
+            }
+        }
+        finally
+        {
+            _dialogOpen = false;
+        }
+    }
+
+    private void ToggleRecordButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isRecording)
+            StopRecording();
+        else
+            StartRecording();
+    }
+
+    private void StopRecording()
     {
         try
         {
             if (_waveIn is not null && _isRecording)
                 _waveIn.StopRecording();
-            SetButtonStates(false);
         }
         catch (Exception ex)
         {
@@ -137,34 +266,34 @@ public partial class SoundRecorderWindow : Window
     {
         CleanupRecording(deleteFile: true);
 
+        if (_sources.Count == 0) return;
+
         var fallback = _loc["Unknown_Singer"];
-        var baseName = SanitizeFileName(string.IsNullOrWhiteSpace(FileNameTextBox.Text) ? fallback : FileNameTextBox.Text.Trim());
+        var baseName = SanitizeFileName(string.IsNullOrWhiteSpace(_fileName) ? fallback : _fileName.Trim());
         _outputFilePath = GetUniquePath(Path.Combine(_options.SavePath, $"{baseName}.mp3"));
 
         try
         {
             _waveIn = new WaveInEvent
             {
-                DeviceNumber = SourceComboBox.SelectedIndex,
+                DeviceNumber = Math.Clamp(_sourceIndex, 0, _sources.Count - 1),
                 WaveFormat = new WaveFormat(_options.SampleRateHz, 16, 2)
             };
             _mp3Writer = new LameMP3FileWriter(_outputFilePath, _waveIn.WaveFormat, _options.Mp3BitrateKbps);
             _waveIn.DataAvailable += OnDataAvailable;
             _waveIn.RecordingStopped += OnRecordingStopped;
             _waveIn.StartRecording();
-            _isRecording = true;
-            SetButtonStates(true);
+            SetRecordingUi(true);
 
             _elapsed = TimeSpan.Zero;
-            RecordingTimeText.Text = "00:00:00";
+            TimerText.Text = "00:00:00";
             _recordTimer.Stop();
             _recordTimer.Start();
-            Title = _loc.Format("Recorder_TitleRecording", _instanceNumber, SourceComboBox.Text);
         }
         catch (Exception ex)
         {
             CleanupRecording(deleteFile: true);
-            SetButtonStates(false);
+            SetRecordingUi(false);
             MessageBox.Show(_loc.Format("Recorder_StartFailed", ex.Message), _loc["Recorder_ErrorTitle"], MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -175,36 +304,40 @@ public partial class SoundRecorderWindow : Window
         {
             _mp3Writer?.Write(args.Buffer, 0, args.BytesRecorded);
 
-            float leftMax = 0f, rightMax = 0f;
+            float peak = 0f;
             var channels = _waveIn?.WaveFormat.Channels ?? 1;
             var bytesPerSample = _waveIn?.WaveFormat.BitsPerSample == 32 ? 4 : 2;
             var blockAlign = bytesPerSample * channels;
 
             for (var i = 0; i <= args.BytesRecorded - blockAlign; i += blockAlign)
             {
-                var amp0 = ReadAmp(args.Buffer, i, bytesPerSample);
-                if (amp0 > leftMax) leftMax = amp0;
-
-                if (channels > 1)
+                for (var c = 0; c < channels; c++)
                 {
-                    var amp1 = ReadAmp(args.Buffer, i + bytesPerSample, bytesPerSample);
-                    if (amp1 > rightMax) rightMax = amp1;
+                    var amp = ReadAmp(args.Buffer, i + c * bytesPerSample, bytesPerSample);
+                    if (amp > peak) peak = amp;
                 }
             }
 
-            if (channels == 1)
-                rightMax = leftMax;
-
-            Dispatcher.BeginInvoke(() =>
-            {
-                LeftLevelMeter.Value = Math.Clamp(leftMax * 100.0, 0, 100);
-                RightLevelMeter.Value = Math.Clamp(rightMax * 100.0, 0, 100);
-            });
+            var level = Math.Clamp(peak * 100.0, 0, 100);
+            Dispatcher.BeginInvoke(() => UpdateEqualizer(level));
         }
         catch
         {
             // ignore races during shutdown
         }
+    }
+
+    private void UpdateEqualizer(double level)
+    {
+        var lit = (int)Math.Round(EqBarCount * (level / 100.0));
+        for (var i = 0; i < EqBarCount; i++)
+            _eqBars[i].Opacity = i < lit ? 1.0 : 0.22;
+    }
+
+    private void ResetEqualizer()
+    {
+        foreach (var bar in _eqBars)
+            bar.Opacity = 0.22;
     }
 
     private static float ReadAmp(byte[] buffer, int offset, int bytesPerSample) =>
@@ -226,15 +359,12 @@ public partial class SoundRecorderWindow : Window
         try { _mp3Writer?.Flush(); } catch { /* ignore */ }
         try { _mp3Writer?.Dispose(); } catch { /* ignore */ }
         _mp3Writer = null;
-        _isRecording = false;
 
         Dispatcher.BeginInvoke(() =>
         {
             _recordTimer.Stop();
-            LeftLevelMeter.Value = 0;
-            RightLevelMeter.Value = 0;
-            Title = _loc.Format("Recorder_Title", _instanceNumber);
-            SetButtonStates(false);
+            ResetEqualizer();
+            SetRecordingUi(false);
         });
 
         if (_forceStopWithoutShutdown)
@@ -252,14 +382,10 @@ public partial class SoundRecorderWindow : Window
 
     private void FinalizeRecordingFile()
     {
-        string uiFileName = "", uiGenre = "", uiSinger = "", uiAlbum = "";
-        Dispatcher.Invoke(() =>
-        {
-            uiFileName = FileNameTextBox.Text;
-            uiGenre = GenreComboBox.Text;
-            uiSinger = SingerComboBox.Text;
-            uiAlbum = AlbumComboBox.Text;
-        });
+        var uiFileName = _fileName;
+        var uiGenre = _genre;
+        var uiSinger = _singer;
+        var uiAlbum = _album;
 
         try
         {
@@ -285,7 +411,10 @@ public partial class SoundRecorderWindow : Window
         try
         {
             if (string.IsNullOrEmpty(_outputFilePath) || !File.Exists(_outputFilePath))
+            {
+                Dispatcher.BeginInvoke(() => SessionCompleted?.Invoke(this, EventArgs.Empty));
                 return;
+            }
 
             using (var file = TagLib.File.Create(_outputFilePath))
             {
@@ -306,12 +435,7 @@ public partial class SoundRecorderWindow : Window
                 catalog.Albums.Add(uiAlbum);
             _catalogStore.Save();
 
-            Dispatcher.BeginInvoke(() =>
-            {
-                BindCatalog();
-                if (_closeAfterSave || _options.CloseAfterSave)
-                    Close();
-            });
+            Dispatcher.BeginInvoke(() => SessionCompleted?.Invoke(this, EventArgs.Empty));
         }
         catch (Exception ex)
         {
@@ -346,31 +470,19 @@ public partial class SoundRecorderWindow : Window
         }
     }
 
-    private void SourceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_isSourceChanging || !_isRecording) return;
-        _isSourceChanging = true;
-        try
-        {
-            CleanupRecording(deleteFile: true);
-            StartRecording();
-        }
-        finally
-        {
-            _isSourceChanging = false;
-        }
-    }
-
-    private void Window_Closed(object? sender, EventArgs e)
+    public void DisposeSession()
     {
         if (_isRecording && _waveIn is not null)
         {
-            _closeAfterSave = true;
-            try { _waveIn.StopRecording(); } catch { CleanupRecording(deleteFile: false); }
-            return;
+            _forceStopWithoutShutdown = true;
+            try { _waveIn.StopRecording(); }
+            catch { CleanupRecording(deleteFile: false); }
+        }
+        else
+        {
+            CleanupRecording(deleteFile: false);
         }
 
-        CleanupRecording(deleteFile: false);
         _recordTimer.Stop();
     }
 

@@ -1,0 +1,52 @@
+<Window x:Class="StudioManager.App.Windows.RecorderMetadataDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:services="clr-namespace:StudioManager.App.Services"
+        DataContext="{x:Static services:LocalizationManager.Instance}"
+        FlowDirection="{Binding FlowDirection}"
+        Title="{Binding [Recorder_MetadataTitle]}"
+        Width="440"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{StaticResource ShellBackground}"
+        Icon="pack://application:,,,/Assets/Images/app-icon.ico">
+    <Border Style="{StaticResource ConsolePanel}" Margin="14">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding [Recorder_Source]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="SourceComboBox" Margin="0,0,0,10" FlowDirection="LeftToRight"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding [Recorder_Album]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="AlbumComboBox" Margin="0,0,0,10" IsEditable="True"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding [Recorder_Genre]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" x:Name="GenreComboBox" Margin="0,0,0,10" IsEditable="True"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding [Recorder_Singer]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,10"/>
+            <ComboBox Grid.Row="3" Grid.Column="1" x:Name="SingerComboBox" Margin="0,0,0,10" IsEditable="True"
+                      SelectionChanged="SingerComboBox_SelectionChanged"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding [Recorder_File]}" Foreground="{StaticResource ShellMuted}" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,14"/>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="FileNameTextBox" Margin="0,0,0,14"/>
+
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="{Binding [Cancel]}" Style="{StaticResource GhostButton}" MinWidth="88" Margin="0,0,8,0" IsCancel="True" Click="Cancel_Click"/>
+                <Button Content="{Binding [Ok]}" Style="{StaticResource AccentButton}" MinWidth="88" IsDefault="True" Click="Ok_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

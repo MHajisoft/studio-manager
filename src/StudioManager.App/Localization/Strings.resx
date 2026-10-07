@@ -53,8 +53,12 @@
   <data name="Save" xml:space="preserve"><value>Save</value></data>
   <data name="Go" xml:space="preserve"><value>Go</value></data>
   <data name="Delete" xml:space="preserve"><value>Delete</value></data>
-  <data name="OpenRecorders" xml:space="preserve"><value>OPEN RECORDERS</value></data>
-  <data name="OpenRecordersHint" xml:space="preserve"><value>Each click opens a new independent window so multiple inputs can record at once.</value></data>
+  <data name="OpenRecorders" xml:space="preserve"><value>RECORDERS</value></data>
+  <data name="OpenRecordersHint" xml:space="preserve"><value>Compact rows show source, timer, icon control, and EQ. Hover for metadata; click to edit in a dialog. Stop saves and removes the row.</value></data>
+  <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Recorder_MetadataTitle" xml:space="preserve"><value>Recording details</value></data>
+  <data name="StatusRecorderSaved" xml:space="preserve"><value>Recording saved — row closed</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="StatusReady" xml:space="preserve"><value>Studio ready</value></data>
   <data name="RecordersCount" xml:space="preserve"><value>Recorders: {0}</value></data>
@@ -66,7 +70,7 @@
   <data name="StatusPresetSaved" xml:space="preserve"><value>Preset saved: {0}</value></data>
   <data name="StatusGotoPreset" xml:space="preserve"><value>Goto preset: {0}</value></data>
   <data name="StatusDeletedPreset" xml:space="preserve"><value>Deleted preset: {0}</value></data>
-  <data name="StatusOpenedRecorder" xml:space="preserve"><value>Opened sound recorder #{0}</value></data>
+  <data name="StatusOpenedRecorder" xml:space="preserve"><value>Added recorder #{0}</value></data>
   <data name="StatusCopied" xml:space="preserve"><value>Copied {0} file(s) to {1}</value></data>
   <data name="StatusPtzError" xml:space="preserve"><value>PTZ error: {0}</value></data>
   <data name="StatusPtzStop" xml:space="preserve"><value>PTZ stop: {0}</value></data>

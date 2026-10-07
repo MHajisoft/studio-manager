@@ -4,7 +4,6 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StudioManager.App.Services;
-using StudioManager.App.Windows;
 using StudioManager.Core.Camera;
 using StudioManager.Core.Configuration;
 using StudioManager.Core.Media;
@@ -58,11 +57,8 @@ public partial class App : System.Windows.Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        foreach (Window window in Windows)
-        {
-            if (window is SoundRecorderWindow recorder)
-                recorder.ForceStopWithoutShutdown();
-        }
+        if (MainWindow is MainWindow main)
+            main.ForceStopAllRecorders();
 
         if (_services is IDisposable disposable)
             disposable.Dispose();

@@ -74,6 +74,30 @@
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
         </Style>
 
+        <Style TargetType="{x:Type ToolTip}">
+            <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
+            <Setter Property="Background" Value="{StaticResource ShellSurface}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="HasDropShadow" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="FontFamily" Value="{StaticResource StudioFont}"/>
             <Setter Property="FontSize" Value="14"/>
@@ -109,7 +133,7 @@
         <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="28"/>
                 </Grid.ColumnDefinitions>
                 <Border x:Name="Border"
@@ -142,7 +166,8 @@
             <Setter Property="Background" Value="{StaticResource ShellElevated}"/>
             <Setter Property="Foreground" Value="{StaticResource ShellForeground}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ShellBorder}"/>
-            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="MinHeight" Value="36"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -150,37 +175,50 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
-                        <Grid>
-                            <ToggleButton Name="ToggleButton"
+                        <Grid SnapsToDevicePixels="True">
+                            <ToggleButton x:Name="ToggleButton"
                                           Template="{StaticResource ComboBoxToggleButton}"
                                           Focusable="False"
                                           IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press"/>
-                            <ContentPresenter Name="ContentSite"
-                                              IsHitTestVisible="False"
-                                              Content="{TemplateBinding SelectionBoxItem}"
-                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              Margin="10,4,32,4"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Left"/>
-                            <TextBox x:Name="PART_EditableTextBox"
-                                     Style="{x:Null}"
-                                     Visibility="Hidden"
-                                     Background="{StaticResource ShellElevated}"
-                                     Foreground="{StaticResource ShellForeground}"
-                                     CaretBrush="{StaticResource ShellForeground}"
-                                     HorizontalAlignment="Left"
-                                     VerticalAlignment="Center"
-                                     Margin="10,4,32,4"
-                                     Focusable="True"/>
-                            <Popup Name="Popup"
+                                          ClickMode="Press"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"/>
+                            <Grid Margin="0,0,28,0">
+                                <ContentPresenter x:Name="ContentSite"
+                                                  IsHitTestVisible="False"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Stretch"
+                                                  RecognizesAccessKey="True"/>
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         Style="{x:Null}"
+                                         Visibility="Hidden"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         CaretBrush="{TemplateBinding Foreground}"
+                                         FontFamily="{TemplateBinding FontFamily}"
+                                         FontSize="{TemplateBinding FontSize}"
+                                         Padding="{TemplateBinding Padding}"
+                                         Margin="0"
+                                         MinHeight="{TemplateBinding MinHeight}"
+                                         VerticalContentAlignment="Center"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         Focusable="True"
+                                         TextWrapping="NoWrap"
+                                         AcceptsReturn="False"/>
+                            </Grid>
+                            <Popup x:Name="Popup"
                                    Placement="Bottom"
                                    IsOpen="{TemplateBinding IsDropDownOpen}"
                                    AllowsTransparency="True"
                                    Focusable="False"
                                    PopupAnimation="Fade">
-                                <Grid Name="DropDown"
+                                <Grid x:Name="DropDown"
                                       SnapsToDevicePixels="True"
                                       MinWidth="{TemplateBinding ActualWidth}"
                                       MaxHeight="{TemplateBinding MaxDropDownHeight}">

@@ -1,10 +1,10 @@
-﻿using System.Collections.ObjectModel;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using LibVLCSharp.Shared;
 using Microsoft.Extensions.DependencyInjection;
+using StudioManager.App.Controls;
 using StudioManager.App.Services;
 using StudioManager.App.Windows;
 using StudioManager.Core.Audio;
@@ -22,9 +22,9 @@ public partial class MainWindow : Window
     private readonly ICameraRecordingService _recording;
     private readonly IMediaExportService _export;
     private readonly PresetStore _presets;
-    private readonly ObservableCollection<string> _openRecorders = [];
-    private readonly List<SoundRecorderWindow> _recorderWindows = [];
+    private readonly List<RecorderRowControl> _recorders = [];
     private readonly LocalizationManager _loc = LocalizationManager.Instance;
+    private int _nextRecorderNumber = 1;
 
     private LibVLC? _libVlc;
     private MediaPlayer? _mediaPlayer;
@@ -49,7 +49,6 @@ public partial class MainWindow : Window
 
         InitializeComponent();
         PresetList.ItemsSource = _presets.Presets;
-        OpenRecordersList.ItemsSource = _openRecorders;
         SpeedLabel.Text = SpeedValue.ToString("0.0");
 
         _suppressLanguageChange = true;
@@ -81,7 +80,7 @@ public partial class MainWindow : Window
     {
         RefreshTransportLabels();
         RefreshRecorderCount();
-        foreach (var recorder in _recorderWindows)
+        foreach (var recorder in _recorders)
             recorder.ApplyLocalization();
     }
 
@@ -91,8 +90,13 @@ public partial class MainWindow : Window
         RecordButton.Content = _recording.IsRecording ? _loc["StopRecord"] : _loc["Record"];
     }
 
-    private void RefreshRecorderCount() =>
-        RecorderCountText.Text = _loc.Format("RecordersCount", _recorderWindows.Count);
+    private void RefreshRecorderCount()
+    {
+        var text = _loc.Format("RecordersCount", _recorders.Count);
+        RecorderCountText.Text = text;
+        if (RecorderCountInline is not null)
+            RecorderCountInline.Text = text;
+    }
 
     private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -332,29 +336,38 @@ public partial class MainWindow : Window
 
     private void SpawnRecorder_Click(object sender, RoutedEventArgs e)
     {
-        var index = _recorderWindows.Count + 1;
+        var index = _nextRecorderNumber++;
         var catalog = App.Services.GetRequiredService<AudioCatalogStore>();
-        var window = new SoundRecorderWindow(_options.Audio, catalog, index)
-        {
-            Owner = this
-        };
-        window.Closed += (_, _) =>
-        {
-            _recorderWindows.Remove(window);
-            RefreshRecorderList();
-        };
-        _recorderWindows.Add(window);
-        window.Show();
-        RefreshRecorderList();
+        var row = new RecorderRowControl(_options.Audio, catalog, index);
+        row.SessionCompleted += Recorder_SessionCompleted;
+        _recorders.Add(row);
+        RecorderRowsPanel.Children.Add(row);
+        RefreshRecorderCount();
         StatusText.Text = _loc.Format("StatusOpenedRecorder", index);
     }
 
-    private void RefreshRecorderList()
+    private void Recorder_SessionCompleted(object? sender, EventArgs e)
     {
-        _openRecorders.Clear();
-        foreach (var w in _recorderWindows)
-            _openRecorders.Add(w.Title);
+        if (sender is not RecorderRowControl row)
+            return;
+
+        RemoveRecorder(row);
+        StatusText.Text = _loc["StatusRecorderSaved"];
+    }
+
+    private void RemoveRecorder(RecorderRowControl row)
+    {
+        row.SessionCompleted -= Recorder_SessionCompleted;
+        row.DisposeSession();
+        _recorders.Remove(row);
+        RecorderRowsPanel.Children.Remove(row);
         RefreshRecorderCount();
+    }
+
+    public void ForceStopAllRecorders()
+    {
+        foreach (var recorder in _recorders.ToList())
+            recorder.ForceStopWithoutShutdown();
     }
 
     private async void ExportUsb_Click(object sender, RoutedEventArgs e)
@@ -427,6 +440,10 @@ public partial class MainWindow : Window
 
     private async void Window_Closed(object? sender, EventArgs e)
     {
+        ForceStopAllRecorders();
+        foreach (var recorder in _recorders.ToList())
+            RemoveRecorder(recorder);
+
         CloseMonitor(ref _monitor2);
         CloseMonitor(ref _monitor3);
 
