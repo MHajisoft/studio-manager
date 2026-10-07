@@ -89,6 +89,8 @@ public partial class RecorderRowControl : UserControl
     public void ApplyLocalization()
     {
         ToggleRecordButton.ToolTip = _isRecording ? _loc["Recorder_Stop"] : _loc["Recorder_Start"];
+        if (!_isRecording)
+            _fileName = BuildDefaultFileName(_singer);
         RefreshRowLabels();
     }
 
@@ -149,7 +151,7 @@ public partial class RecorderRowControl : UserControl
     private string BuildDefaultFileName(string? singer)
     {
         var name = string.IsNullOrWhiteSpace(singer) ? _loc["Unknown_Singer"] : singer.Trim();
-        return $"{name}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
+        return $"{name}-{StudioDateHelper.FormatDate(DateTime.Now)}";
     }
 
     private void RefreshRowLabels()
@@ -418,11 +420,11 @@ public partial class RecorderRowControl : UserControl
 
             using (var file = TagLib.File.Create(_outputFilePath))
             {
-                file.Tag.Title = $"{uiGenre}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
+                file.Tag.Title = $"{uiGenre}-{StudioDateHelper.FormatDate(DateTime.Now)}";
                 file.Tag.Genres = [string.IsNullOrWhiteSpace(uiGenre) ? _loc["Default_Genre"] : uiGenre];
                 file.Tag.Performers = [string.IsNullOrWhiteSpace(uiSinger) ? _loc["Unknown_Singer"] : uiSinger];
                 file.Tag.Album = string.IsNullOrWhiteSpace(uiAlbum) ? _loc["Unknown_Album"] : uiAlbum;
-                file.Tag.Year = PersianDateHelper.GetPersianYear(DateTime.Now);
+                file.Tag.Year = StudioDateHelper.FormatYear(DateTime.Now);
                 file.Save();
             }
 

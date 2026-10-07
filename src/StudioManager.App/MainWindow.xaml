@@ -25,17 +25,7 @@
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding [Language]}" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="{StaticResource ShellMuted}"/>
-                    <ComboBox x:Name="LanguageCombo"
-                              Width="128"
-                              ItemsSource="{Binding AvailableLanguages}"
-                              DisplayMemberPath="DisplayName"
-                              SelectedValuePath="Culture"
-                              SelectionChanged="LanguageCombo_SelectionChanged"/>
-                    <Border Width="1" Background="{StaticResource ShellBorder}" Margin="14,6" Opacity="0.7"/>
-                    <TextBlock x:Name="RecorderCountText" VerticalAlignment="Center" Foreground="{StaticResource ShellMuted}"/>
-                </StackPanel>
+                <TextBlock x:Name="RecorderCountText" VerticalAlignment="Center" Foreground="{StaticResource ShellMuted}"/>
             </StatusBarItem>
         </StatusBar>
 
@@ -56,15 +46,24 @@
                 </Grid.RowDefinitions>
 
                 <DockPanel Grid.Row="0" Margin="0,0,0,14">
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <Button Content="{Binding [SpawnRecorder]}"
-                                Style="{StaticResource AccentButton}"
-                                Margin="0,0,8,0"
-                                Click="SpawnRecorder_Click"/>
-                        <Button Content="{Binding [ExportUsb]}"
-                                Style="{StaticResource GhostButton}"
-                                Click="ExportUsb_Click"/>
-                    </StackPanel>
+                    <Button x:Name="MenuButton"
+                            DockPanel.Dock="Right"
+                            Style="{StaticResource IconGhostButton}"
+                            ToolTip="{Binding [Menu]}"
+                            Click="MenuButton_Click"
+                            Content="☰">
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="AppMenu" Opened="AppMenu_Opened">
+                                <MenuItem Header="{Binding [ExportUsb]}" Click="ExportUsb_Click"/>
+                                <MenuItem Header="{Binding [Menu_Catalog]}" Click="Catalog_Click"/>
+                                <Separator/>
+                                <MenuItem x:Name="LanguageMenuRoot" Header="{Binding [Language]}">
+                                    <MenuItem x:Name="LangFaItem" Header="فارسی" Tag="fa-IR" IsCheckable="True" Click="LanguageMenu_Click"/>
+                                    <MenuItem x:Name="LangEnItem" Header="English" Tag="en-US" IsCheckable="True" Click="LanguageMenu_Click"/>
+                                </MenuItem>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
                     <TextBlock Text="{Binding [StudioDesk]}" Style="{StaticResource HeroTitle}" VerticalAlignment="Center"/>
                 </DockPanel>
 
@@ -143,6 +142,18 @@
                         </ScrollViewer>
                     </DockPanel>
                 </Border>
+
+                <Button x:Name="SpawnRecorderFab"
+                        Grid.Row="0"
+                        Grid.RowSpan="4"
+                        Style="{StaticResource FabButton}"
+                        Content="+"
+                        ToolTip="{Binding [SpawnRecorder]}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,16,16"
+                        Panel.ZIndex="20"
+                        Click="SpawnRecorder_Click"/>
             </Grid>
 
             <!-- PTZ console -->

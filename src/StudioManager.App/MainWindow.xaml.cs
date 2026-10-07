@@ -32,7 +32,6 @@ public partial class MainWindow : Window
     private PreviewMonitorWindow? _monitor3;
     private bool _isLive;
     private bool _ptzBusy;
-    private bool _suppressLanguageChange;
 
     public MainWindow(
         StudioOptions options,
@@ -50,10 +49,6 @@ public partial class MainWindow : Window
         InitializeComponent();
         PresetList.ItemsSource = _presets.Presets;
         SpeedLabel.Text = SpeedValue.ToString("0.0");
-
-        _suppressLanguageChange = true;
-        LanguageCombo.SelectedValue = _loc.Culture.Name;
-        _suppressLanguageChange = false;
 
         StatusText.Text = _loc["StatusReady"];
         RefreshRecorderCount();
@@ -84,6 +79,12 @@ public partial class MainWindow : Window
             recorder.ApplyLocalization();
     }
 
+    private void PersistCulture(string culture)
+    {
+        _options.Ui.Culture = culture;
+        App.Services.GetRequiredService<UiSettingsStore>().SaveCulture(culture);
+    }
+
     private void RefreshTransportLabels()
     {
         LiveButton.Content = _isLive ? _loc["StopLive"] : _loc["Live"];
@@ -98,15 +99,43 @@ public partial class MainWindow : Window
             RecorderCountInline.Text = text;
     }
 
-    private void LanguageCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void MenuButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_suppressLanguageChange || LanguageCombo.SelectedValue is not string culture)
+        if (MenuButton.ContextMenu is null)
+            return;
+
+        MenuButton.ContextMenu.PlacementTarget = MenuButton;
+        MenuButton.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+        MenuButton.ContextMenu.IsOpen = true;
+    }
+
+    private void AppMenu_Opened(object sender, RoutedEventArgs e) => SyncLanguageMenuChecks();
+
+    private void SyncLanguageMenuChecks()
+    {
+        var culture = _loc.Culture.Name;
+        LangFaItem.IsChecked = string.Equals(culture, "fa-IR", StringComparison.OrdinalIgnoreCase);
+        LangEnItem.IsChecked = string.Equals(culture, "en-US", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void LanguageMenu_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not System.Windows.Controls.MenuItem { Tag: string culture })
             return;
 
         _loc.SetCulture(culture);
-        _options.Ui.Culture = culture;
+        PersistCulture(culture);
         StatusText.Text = _loc["StatusReady"];
         RefreshTransportLabels();
+        SyncLanguageMenuChecks();
+    }
+
+    private void Catalog_Click(object sender, RoutedEventArgs e)
+    {
+        var catalog = App.Services.GetRequiredService<AudioCatalogStore>();
+        var dialog = new CatalogEditorDialog(catalog) { Owner = this };
+        if (dialog.ShowDialog() == true)
+            StatusText.Text = _loc["StatusCatalogSaved"];
     }
 
     private void SpeedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -162,7 +191,7 @@ public partial class MainWindow : Window
                 ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "Studio")
                 : Camera.VideoFolder;
             Directory.CreateDirectory(folder);
-            var file = Path.Combine(folder, $"rec_{PersianDateHelper.GetPersianDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.mp4");
+            var file = Path.Combine(folder, $"rec_{StudioDateHelper.FormatDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.mp4");
             await _recording.StartRecordingAsync(Camera, file);
             RecordButton.Content = _loc["StopRecord"];
             StatusText.Text = _loc.Format("StatusRecording", file);
@@ -181,7 +210,7 @@ public partial class MainWindow : Window
                 ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Studio")
                 : Camera.SnapshotFolder;
             Directory.CreateDirectory(folder);
-            var file = Path.Combine(folder, $"{PersianDateHelper.GetPersianDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.jpg");
+            var file = Path.Combine(folder, $"{StudioDateHelper.FormatDate(DateTime.Now)}_{DateTime.Now:HH-mm-ss}.jpg");
             await _recording.CaptureSnapshotAsync(Camera, file);
             StatusText.Text = _loc.Format("StatusSnapshot", file);
         }
@@ -382,7 +411,7 @@ public partial class MainWindow : Window
         try
         {
             var day = DateOnly.FromDateTime(DateTime.Today);
-            var dest = Path.Combine(drive, PersianDateHelper.GetPersianDate(DateTime.Today));
+            var dest = Path.Combine(drive, StudioDateHelper.FormatDate(DateTime.Today));
             var count = await _export.CopyTodaysFilesAsync(_options.MediaFolders, dest, day);
             StatusText.Text = _loc.Format("StatusCopied", count, dest);
             MessageBox.Show(_loc.Format("Info_Copied", count, dest), _loc["Dialog_Export"], MessageBoxButton.OK, MessageBoxImage.Information);

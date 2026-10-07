@@ -27,14 +27,20 @@ public partial class App : System.Windows.Application
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
         services.Configure<StudioOptions>(configuration.GetSection(StudioOptions.SectionName));
-        services.AddSingleton(_ =>
+        services.AddSingleton<UiSettingsStore>();
+        services.AddSingleton(sp =>
         {
             var opts = new StudioOptions();
             configuration.GetSection(StudioOptions.SectionName).Bind(opts);
             if (string.IsNullOrWhiteSpace(opts.Audio.SavePath))
                 opts.Audio.SavePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Recordings");
-            if (string.IsNullOrWhiteSpace(opts.Ui.Culture))
+
+            var savedCulture = sp.GetRequiredService<UiSettingsStore>().LoadCulture();
+            if (!string.IsNullOrWhiteSpace(savedCulture))
+                opts.Ui.Culture = savedCulture;
+            else if (string.IsNullOrWhiteSpace(opts.Ui.Culture))
                 opts.Ui.Culture = "fa-IR";
+
             return opts;
         });
 

@@ -9,6 +9,7 @@
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
+        WindowStyle="ToolWindow"
         ShowInTaskbar="False"
         Background="{StaticResource ShellBackground}"
         Icon="pack://application:,,,/Assets/Images/app-icon.ico">

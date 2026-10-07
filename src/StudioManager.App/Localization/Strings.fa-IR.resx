@@ -35,8 +35,20 @@
 
   <data name="App_Title" xml:space="preserve"><value>مدیریت استودیو</value></data>
   <data name="StudioDesk" xml:space="preserve"><value>میز استودیو</value></data>
-  <data name="SpawnRecorder" xml:space="preserve"><value>+ ضبط صوت</value></data>
+  <data name="SpawnRecorder" xml:space="preserve"><value>افزودن ضبط صوت</value></data>
   <data name="ExportUsb" xml:space="preserve"><value>خروجی امروز ← USB</value></data>
+  <data name="Menu" xml:space="preserve"><value>منو</value></data>
+  <data name="Menu_Catalog" xml:space="preserve"><value>فهرست‌های ضبط…</value></data>
+  <data name="Catalog_Title" xml:space="preserve"><value>فهرست‌های ضبط</value></data>
+  <data name="Catalog_Singers" xml:space="preserve"><value>خواننده‌ها</value></data>
+  <data name="Catalog_Albums" xml:space="preserve"><value>آلبوم‌ها</value></data>
+  <data name="Catalog_Genres" xml:space="preserve"><value>ژانرها</value></data>
+  <data name="Catalog_Add" xml:space="preserve"><value>افزودن</value></data>
+  <data name="Catalog_Rename" xml:space="preserve"><value>تغییر نام</value></data>
+  <data name="Catalog_EmptyItem" xml:space="preserve"><value>ابتدا یک نام وارد کنید.</value></data>
+  <data name="Catalog_DuplicateItem" xml:space="preserve"><value>این نام از قبل وجود دارد.</value></data>
+  <data name="Catalog_SelectItem" xml:space="preserve"><value>ابتدا یک مورد را انتخاب کنید.</value></data>
+  <data name="StatusCatalogSaved" xml:space="preserve"><value>فهرست‌های ضبط ذخیره شد</value></data>
   <data name="PreviewOffline" xml:space="preserve"><value>پیش‌نمایش خاموش — لایو را بزنید</value></data>
   <data name="Live" xml:space="preserve"><value>لایو</value></data>
   <data name="StopLive" xml:space="preserve"><value>قطع لایو</value></data>

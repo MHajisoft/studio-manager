@@ -71,7 +71,7 @@ public partial class RecorderMetadataDialog : Window
     private string BuildDefaultFileName(string? singer)
     {
         var name = string.IsNullOrWhiteSpace(singer) ? _loc["Unknown_Singer"] : singer.Trim();
-        return $"{name}-{PersianDateHelper.GetPersianDate(DateTime.Now)}";
+        return $"{name}-{StudioDateHelper.FormatDate(DateTime.Now)}";
     }
 
     private void Ok_Click(object sender, RoutedEventArgs e)
